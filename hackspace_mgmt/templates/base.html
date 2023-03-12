@@ -1,0 +1,29 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}{% endblock %} - Flaskr</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/chota.min.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}"/>
+</head>
+<body class="">
+  <header>
+    <a href="{{ url_for('home') }}" class="site-title"><img src="{{ url_for('static', filename='images/favicon.ico') }}"/><span>Bristol Hackspace Management</span></a>
+  </header>
+  <nav role="navigation" class="sidenav">
+    <ul>
+    </ul>
+  </nav>
+  <div class="content">
+    <main role="main" class="main">
+        {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

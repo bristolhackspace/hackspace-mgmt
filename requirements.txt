@@ -1,0 +1,4 @@
+flask>=2.0
+flask-admin>=3.0
+yarl
+requests
