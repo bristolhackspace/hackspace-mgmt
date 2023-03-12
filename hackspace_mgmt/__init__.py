@@ -24,6 +24,9 @@ def create_app(test_config=None):
     from . import equipment
     app.register_blueprint(equipment.bp)
 
+    from . import api
+    app.register_blueprint(api.bp)
+
     @app.route("/")
     def home():
         return render_template("home.html")
