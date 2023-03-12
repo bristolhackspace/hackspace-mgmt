@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Enroll Card</h1>
+<form>
+  <fieldset>
+    <legend>Card details</legend>
+    <p>
+      <label for="card_number">4 digit number on the front of the card/keyfob</label>
+      <input id="card_number" type="number" placeholder="Card number"/>
+    </p>
+    <p>
+      <label for="card_serial"><b>Remove the card from your wallet if applicable</b> and tap it on the reader to fill in the serial number</label>
+      <input id="card_serial" type="text" placeholder="Tap your card to fill in the serial number"/>
+    </p>
+    <p>
+      <button type="submit" class="button primary">Enroll</button>
+    </p>
+  </fieldset>
+</form>
+{% endblock %}

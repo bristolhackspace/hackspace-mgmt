@@ -18,6 +18,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    from . import general
+    app.register_blueprint(general.bp)
+
     @app.route("/")
     def home():
         return render_template("home.html")
