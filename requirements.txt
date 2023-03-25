@@ -1,4 +1,6 @@
 flask>=2.0
-flask-admin>=3.0
 yarl
 requests
+Flask-SQLAlchemy
+psycopg2>=2.9.0
+Flask-Migrate

@@ -1,12 +1,14 @@
 import os
 
 from flask import Flask, render_template
-from flask_admin import Admin
+from . import database
+from . import models
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY="dev",
+        SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres:postgres@localhost:5432/postgres"
     )
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)
@@ -17,6 +19,8 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+
+    database.init_db(app)
 
     from . import general
     app.register_blueprint(general.bp)
