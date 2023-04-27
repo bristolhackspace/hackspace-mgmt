@@ -3,4 +3,3 @@ yarl
 requests
 Flask-SQLAlchemy
 psycopg2>=2.9.0
-Flask-Migrate
