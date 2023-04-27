@@ -8,7 +8,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY="dev",
-        SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres:postgres@localhost:5432/postgres"
+        SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres:postgres@localhost:5432/hackspace"
     )
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)
@@ -28,8 +28,8 @@ def create_app(test_config=None):
     from . import equipment
     app.register_blueprint(equipment.bp)
 
-    from . import api
-    app.register_blueprint(api.bp)
+    from . import machine_api
+    app.register_blueprint(machine_api.bp)
 
     @app.route("/")
     def home():
