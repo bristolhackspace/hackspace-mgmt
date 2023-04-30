@@ -1,8 +1,11 @@
-from .database import db
 import enum
 from sqlalchemy import String, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional, List
+
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 
 class InductionState(enum.Enum):

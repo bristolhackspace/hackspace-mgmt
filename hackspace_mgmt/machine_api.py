@@ -2,8 +2,7 @@
 from flask import (
     Blueprint, abort, request, url_for
 )
-from .database import db
-from .models import Member, Card, Machine, MachineController, Induction, InductionState
+from .models import db, Member, Card, Machine, MachineController, Induction, InductionState
 from sqlalchemy.exc import NoResultFound
 
 bp = Blueprint('machine_api', __name__, url_prefix='/api/machines')

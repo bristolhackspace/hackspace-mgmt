@@ -1,8 +1,6 @@
 import os
 
 from flask import Flask, render_template
-from . import database
-from . import models
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -20,7 +18,8 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    database.init_db(app)
+    from .models import db
+    db.init_app(app)
 
     from . import general
     app.register_blueprint(general.bp)
