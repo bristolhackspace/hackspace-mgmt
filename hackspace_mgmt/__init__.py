@@ -21,17 +21,12 @@ def create_app(test_config=None):
     from .models import db
     db.init_app(app)
 
-    from . import general
-    app.register_blueprint(general.bp)
-
-    from . import equipment
-    app.register_blueprint(equipment.bp)
+    from .admin import admin
+    admin.init_app(app)
 
     from . import machine_api
     app.register_blueprint(machine_api.bp)
 
-    @app.route("/")
-    def home():
-        return render_template("home.html")
+
 
     return app

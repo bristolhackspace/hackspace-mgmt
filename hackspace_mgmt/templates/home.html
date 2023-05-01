@@ -1,7 +1,0 @@
-{% extends 'base.html' %}
-{% block content %}
-<h1>Home</h1>
-<p>Try these various links to test out the API:</p>
-<p><a href="{{ url_for('machine_api.unlock', machine_mac='abcdef', card_id='aabbccdd')}}">Unlock machine</a></p>
-<p><a href="{{ url_for('machine_api.lock', machine_mac='my_machine')}}">Lock machine</a></p>
-{% endblock %}
