@@ -45,7 +45,8 @@ class Machine(db.Model):
         return self.name
 
 class MachineController(db.Model):
-    mac: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    mac: Mapped[int] = mapped_column(unique=True)
     machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"))
     machine: Mapped["Machine"] = relationship(back_populates="controllers")
     requires_update: Mapped[bool] = mapped_column()
