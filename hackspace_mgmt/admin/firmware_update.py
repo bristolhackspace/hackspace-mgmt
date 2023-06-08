@@ -23,6 +23,9 @@ class FirmwareUpdateView(BaseView):
         return_url = get_redirect_target() or self.get_url('.index')
 
         if validate_form_on_submit(form):
+            data = request.files[form.upload.name].read()
+            with open("/run/hackspace-mgmt/firmware_update.bin", "wb") as fh:
+                fh.write(data)
             flash(f'Successfully saved file: {form.upload.data.filename}', 'success')
             return redirect(return_url)
 

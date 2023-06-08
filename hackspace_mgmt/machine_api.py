@@ -1,6 +1,6 @@
 
 from flask import (
-    Blueprint, abort, request, url_for
+    Blueprint, abort, request, url_for, send_file
 )
 from .models import db, Member, Card, Machine, MachineController, Induction, InductionState
 from sqlalchemy.exc import NoResultFound
@@ -38,26 +38,22 @@ def unlock(machine_mac):
 def lock(machine_mac):
     return {"unlocked": False}
 
-@bp.route('/<machine_mac>/status')
+@bp.route('/<machine_mac>/status', methods=["POST"])
 def status(machine_mac):
-    pending_firmware = request.args.get("pending_firmware", "false").lower() in ["true", "1"]
-    # machine_status = request.json()
+    machine_status = request.json
 
     controller = controller_from_mac(machine_mac)
 
-    if pending_firmware:
+    if controller.requires_update:
         controller.requires_update = False
         db.session.commit()
-        return {"reboot": True}
-
-    if controller.requires_update:
         return {"firmware_update": url_for('machine_api.firmware_update', _external=True)}
-    else:
-        return {}
+
+    return {}
 
 @bp.route('/firmware_update')
 def firmware_update():
-    return {"firmware": "some goddam firmware"}
+    return send_file("/run/hackspace-mgmt/firmware_update.bin", as_attachment=True)
 
 
 @bp.errorhandler(404)
