@@ -27,13 +27,14 @@ class Member(db.Model):
         return self.preferred_name
 
 class Card(db.Model):
-    card_id: Mapped[int] = mapped_column(primary_key=True)
-    card_serial: Mapped[int] = mapped_column(unique=True)
-    member_id: Mapped[int] = mapped_column(ForeignKey("member.id"))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    card_serial: Mapped[int] = mapped_column(unique=True, nullable=True)
+    number_on_front: Mapped[int] = mapped_column(unique=True, nullable=True)
+    member_id: Mapped[int] = mapped_column(ForeignKey("member.id"), nullable=True)
     member: Mapped["Member"] = relationship(back_populates="cards")
 
     def __str__(self):
-        return f"#{self.card_id}"
+        return f"#{self.number_on_front}"
 
 class Machine(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
