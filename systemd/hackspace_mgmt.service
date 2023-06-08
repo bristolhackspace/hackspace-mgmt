@@ -1,0 +1,19 @@
+[Unit]
+Description=Hackspace Management server
+Requires=hackspace_mgmt.socket
+After=network.target
+
+[Service]
+Type=notify
+# another option for an even more restricted service is
+DynamicUser=yes
+RuntimeDirectory=hackspace-mgmt
+WorkingDirectory=/srv/hackspace-mgmt
+ExecStart=/srv/hackspace-mgmt/.venv/bin/gunicorn --workers=2 --reload --access-logfile - 'hackspace_mgmt:create_app()'
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
