@@ -2,5 +2,5 @@ flask>=2.0
 yarl
 requests
 Flask-SQLAlchemy
-psycopg2>=2.9.0
+psycopg2-binary>=2.9.0
 Flask-Admin
