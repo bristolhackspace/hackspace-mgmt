@@ -15,4 +15,4 @@ class InductionView(ModelView):
         return "Member or Machine name"
 
 def create_views(admin: Admin):
-    admin.add_view(InductionView(Induction, db.session, category="Access Control"))
+    admin.add_view(InductionView(Induction, db.session, endpoint="admin/induction", category="Access Control"))
