@@ -2,6 +2,7 @@ import enum
 from sqlalchemy import String, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import sql, cast
 from typing import Optional, List
 from datetime import date
 
@@ -50,7 +51,7 @@ class Member(db.Model):
     discourse_id: Mapped[Optional[int]] = mapped_column(unique=True)
 
     cards: Mapped[List["Card"]] = relationship(back_populates="member")
-    inductions: Mapped[List["Induction"]] = relationship(back_populates="member")
+    inductions: Mapped[List["Induction"]] = relationship(back_populates="member", foreign_keys="Induction.member_id")
 
     @hybrid_property
     def preferred_name(self):
@@ -58,6 +59,10 @@ class Member(db.Model):
             return f"{self.first_name} {self.last_name}"
         else:
             return self.last_name
+
+    @preferred_name.expression
+    def preferred_name(cls):
+        return sql.operators.ColumnOperators.concat(cast(cls.first_name, db.String), cls.last_name)
 
     def __str__(self):
         return self.preferred_name
@@ -96,5 +101,9 @@ class Induction(db.Model):
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"))
     machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"))
     state: Mapped[InductionState] = mapped_column(nullable=False)
-    member: Mapped["Member"] = relationship(back_populates="inductions")
+    inducted_by: Mapped[int] = mapped_column(ForeignKey("member.id"))
+    inducted_on: Mapped[date] = mapped_column(nullable=False, default=date.today)
+
+    member: Mapped["Member"] = relationship(back_populates="inductions", foreign_keys=[member_id])
+    inductor: Mapped["Member"] = relationship(foreign_keys=[inducted_by])
     machine: Mapped["Machine"] = relationship(back_populates="inductions")
