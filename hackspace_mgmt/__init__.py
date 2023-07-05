@@ -21,6 +21,9 @@ def create_app(test_config=None):
     from .models import db
     db.init_app(app)
 
+    from .general import general
+    general.init_app(app)
+
     from .admin import admin
     admin.init_app(app)
 

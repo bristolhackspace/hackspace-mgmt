@@ -46,4 +46,4 @@ class FirmwareUpdateView(BaseView):
             return FirmwareUpdateForm(admin=self)
 
 def create_views(admin: Admin):
-    admin.add_view(FirmwareUpdateView("Firmware Update", endpoint="admin/firmware_update", category="Access Control"))
+    admin.add_view(FirmwareUpdateView("Firmware Update", endpoint="firmware_update", category="Access Control"))
