@@ -1,7 +1,7 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask import request
-from hackspace_mgmt.models import db, Member
+from hackspace_mgmt.models import db, Member, Card
 
 member_columns = (
     "first_name",
@@ -30,6 +30,7 @@ class MemberView(ModelView):
     form_columns = member_columns
     column_filters = member_columns
     column_searchable_list = ('first_name', 'last_name', 'email', 'alt_email')
+    inline_models = (Card,)
 
     def search_placeholder(self):
         return "Member name or email"
