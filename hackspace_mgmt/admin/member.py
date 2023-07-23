@@ -6,8 +6,7 @@ from hackspace_mgmt.models import db, Member, Card
 member_columns = (
     "first_name",
     "last_name",
-    "preferred_first_name",
-    "preferred_last_name",
+    "preferred_name",
     "email",
     "alt_email",
     "join_date",
@@ -34,12 +33,29 @@ class MemberView(ModelView):
     column_searchable_list = (
         'first_name',
         'last_name',
-        'preferred_first_name',
-        'preferred_last_name',
+        'preferred_name',
         'email',
         'alt_email'
     )
     inline_models = (Card,)
+
+    column_labels = {
+        'preferred_name': "Preferred full name (including surname)",
+        'discourse': "Discourse invite status"
+    }
+
+    column_descriptions = {
+        'preferred_name': (
+            "This must include the surname unless the member uses a mononym." +
+            " Leave blank if not needed."
+        )
+    }
+
+    form_widget_args = {
+        "preferred_name": {
+            "placeholder": "(optional)"
+        }
+    }
 
     def search_placeholder(self):
         return "Member name or email"

@@ -33,8 +33,7 @@ class Member(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column(String(80), nullable=False)
     last_name: Mapped[str] = mapped_column(String(80), nullable=True)
-    preferred_first_name: Mapped[str] = mapped_column(String(80), nullable=True)
-    preferred_last_name: Mapped[str] = mapped_column(String(80), nullable=True)
+    preferred_name: Mapped[str] = mapped_column(String(160), nullable=True)
 
     discourse: Mapped[DiscourseInvite] = mapped_column(nullable=False)
     mailchimp: Mapped[bool] = mapped_column(nullable=False)
@@ -58,22 +57,19 @@ class Member(db.Model):
     inductions: Mapped[List["Induction"]] = relationship(back_populates="member", foreign_keys="Induction.member_id")
 
     @hybrid_property
-    def preferred_name(self):
-        first_name = self.preferred_first_name or self.first_name
-        last_name = self.preferred_last_name or self.last_name
-        if last_name:
-            return f"{first_name} {last_name}"
+    def display_name(self):
+        if self.preferred_name:
+            return self.preferred_name
         else:
-            return first_name
+            last_name = self.last_name or ""
+            return f"{self.first_name} {last_name}".strip()
 
-    @preferred_name.expression
-    def preferred_name(cls):
-        first_name = coalesce(cls.preferred_first_name, cls.first_name)
-        last_name = coalesce(cls.preferred_last_name, cls.last_name)
-        return concat(cast(first_name, db.String), last_name)
+    @display_name.expression
+    def display_name(cls):
+        return coalesce(cls.preferred_name, concat(cast(cls.first_name, db.String), cls.last_name))
 
     def __str__(self):
-        return self.preferred_name
+        return self.display_name
 
 class Card(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)

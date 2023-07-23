@@ -5,9 +5,9 @@ from hackspace_mgmt.models import db, Card, Member
 
 class CardView(ModelView):
     column_list = ('number_on_front', 'card_serial', 'member')
-    column_searchable_list = ('member.preferred_name', 'number_on_front')
+    column_searchable_list = ('member.display_name', 'number_on_front')
     form_ajax_refs = {
-        'member': QueryAjaxModelLoader('member', db.session, Member, fields=['preferred_name'], page_size=10, placeholder="Please select member")
+        'member': QueryAjaxModelLoader('member', db.session, Member, fields=['display_name'], page_size=10, placeholder="Please select member")
     }
 
     def search_placeholder(self):
