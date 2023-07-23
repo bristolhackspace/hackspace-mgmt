@@ -76,6 +76,8 @@ class Card(db.Model):
     card_serial: Mapped[int] = mapped_column(unique=True, nullable=True)
     number_on_front: Mapped[int] = mapped_column(unique=True, nullable=True)
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"), nullable=True)
+    lost: Mapped[bool] = mapped_column(nullable=False)
+
     member: Mapped["Member"] = relationship(back_populates="cards")
 
     def __str__(self):
