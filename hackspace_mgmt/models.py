@@ -20,11 +20,11 @@ class InductionState(enum.Enum):
     def __str__(self):
         return f'{self.name}'
 
-class DiscourseStatus(enum.Enum):
+class DiscourseInvite(enum.Enum):
     no = "no"
     invited = "invited"
-    emailed = "emailed"
-    yes = "yes"
+    expired = "expired"
+    accepted = "accepted"
 
     def __str__(self):
         return f'{self.name}'
@@ -36,7 +36,7 @@ class Member(db.Model):
     preferred_first_name: Mapped[str] = mapped_column(String(80), nullable=True)
     preferred_last_name: Mapped[str] = mapped_column(String(80), nullable=True)
 
-    discourse: Mapped[DiscourseStatus] = mapped_column(nullable=False)
+    discourse: Mapped[DiscourseInvite] = mapped_column(nullable=False)
     mailchimp: Mapped[bool] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(String(300), nullable=True)
     alt_email: Mapped[str] = mapped_column(String(300), nullable=True)

@@ -37,14 +37,14 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 --
 -- TOC entry 653 (class 1247 OID 16465)
--- Name: discourse_status; Type: TYPE; Schema: public; Owner: -
+-- Name: discourse_invite; Type: TYPE; Schema: public; Owner: -
 --
 
-CREATE TYPE public.discourse_status AS ENUM (
+CREATE TYPE public.discourse_invite AS ENUM (
     'no',
     'invited',
-    'emailed',
-    'yes'
+    'expired',
+    'accepted'
 );
 
 
@@ -185,7 +185,7 @@ CREATE TABLE public.member (
     first_name character varying(80) NOT NULL,
     last_name character varying(80),
     discourse_id integer,
-    discourse public.discourse_status DEFAULT 'no'::public.discourse_status NOT NULL,
+    discourse public.discourse_invite DEFAULT 'no'::public.discourse_invite NOT NULL,
     mailchimp boolean DEFAULT false NOT NULL,
     email character varying(300),
     alt_email character varying(300),
