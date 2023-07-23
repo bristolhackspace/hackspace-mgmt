@@ -6,6 +6,8 @@ from hackspace_mgmt.models import db, Member, Card
 member_columns = (
     "first_name",
     "last_name",
+    "preferred_first_name",
+    "preferred_last_name",
     "email",
     "alt_email",
     "join_date",
@@ -29,7 +31,14 @@ class MemberView(ModelView):
     column_list = member_columns
     form_columns = member_columns
     column_filters = member_columns
-    column_searchable_list = ('first_name', 'last_name', 'email', 'alt_email')
+    column_searchable_list = (
+        'first_name',
+        'last_name',
+        'preferred_first_name',
+        'preferred_last_name',
+        'email',
+        'alt_email'
+    )
     inline_models = (Card,)
 
     def search_placeholder(self):
