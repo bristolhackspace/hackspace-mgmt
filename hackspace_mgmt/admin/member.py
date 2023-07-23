@@ -11,7 +11,7 @@ member_columns = (
     "alt_email",
     "join_date",
     "discourse",
-    "mailchimp",
+    "newsletter",
     "payment_ref",
     "payment_active",
     "address1",
@@ -41,7 +41,8 @@ class MemberView(ModelView):
 
     column_labels = {
         'preferred_name': "Preferred full name (including surname)",
-        'discourse': "Discourse invite status"
+        'discourse': "Discourse invite status",
+        'newsletter': "Added to newsletter? (currently mailchimp)"
     }
 
     column_descriptions = {

@@ -36,7 +36,7 @@ class Member(db.Model):
     preferred_name: Mapped[str] = mapped_column(String(160), nullable=True)
 
     discourse: Mapped[DiscourseInvite] = mapped_column(nullable=False)
-    mailchimp: Mapped[bool] = mapped_column(nullable=False)
+    newsletter: Mapped[bool] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(String(300), nullable=True)
     alt_email: Mapped[str] = mapped_column(String(300), nullable=True)
     payment_ref: Mapped[str] = mapped_column(String(200), nullable=True)
