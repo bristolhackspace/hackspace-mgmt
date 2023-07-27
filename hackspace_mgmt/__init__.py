@@ -1,4 +1,5 @@
 import os
+import logging
 
 from flask import Flask
 
@@ -12,6 +13,10 @@ def create_app(test_config=None):
         app.config.from_pyfile("config.py", silent=True)
     else:
         app.config.from_mapping(test_config)
+
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
 
     try:
         os.makedirs(app.instance_path)
