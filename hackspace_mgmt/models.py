@@ -98,6 +98,7 @@ class MachineController(db.Model):
     machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"))
     machine: Mapped["Machine"] = relationship(back_populates="controllers")
     requires_update: Mapped[bool] = mapped_column()
+    powered: Mapped[bool] = mapped_column()
 
     def __str__(self):
         return hex(self.mac)

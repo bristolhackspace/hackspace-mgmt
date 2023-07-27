@@ -1,6 +1,6 @@
 
 from flask import (
-    Blueprint, abort, request, url_for, send_file
+    Blueprint, abort, request, url_for, send_file, current_app
 )
 from .models import db, Member, Card, Machine, MachineController, Induction, InductionState
 from sqlalchemy.exc import NoResultFound
@@ -43,6 +43,13 @@ def status(machine_mac):
     machine_status = request.json
 
     controller = controller_from_mac(machine_mac)
+
+    powered = machine_status.get("power")
+    if powered is not None and powered != controller.powered:
+        controller.powered = powered
+        db.session.commit()
+        if not powered:
+            return {"unlocked": False}
 
     if controller.requires_update:
         controller.requires_update = False
