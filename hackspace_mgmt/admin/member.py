@@ -1,7 +1,9 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask import request
+from flask import request, url_for
 from hackspace_mgmt.models import db, Member, Card
+from hackspace_mgmt.admin.card import SerialField
+
 
 member_columns = (
     "first_name",
@@ -38,7 +40,10 @@ class MemberView(ModelView):
         'email',
         'alt_email'
     )
-    inline_models = (Card,)
+
+    inline_models = [
+        (Card, dict(form_overrides = {"card_serial": SerialField}))
+    ]
 
     column_labels = {
         'preferred_name': "Preferred full name (including surname)",
@@ -53,11 +58,21 @@ class MemberView(ModelView):
         )
     }
 
+
     form_widget_args = {
         "preferred_name": {
             "placeholder": "(optional)"
         }
     }
+
+    def render(self, template, **kwargs):
+        """
+        using extra js in render method allow use
+        url_for that itself requires an app context
+        """
+        self.extra_js = [url_for("static", filename="js/helpers.js")]
+
+        return super().render(template, **kwargs)
 
     def search_placeholder(self):
         return "Member name or email"
