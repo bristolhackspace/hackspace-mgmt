@@ -9,9 +9,10 @@ class SerialField(Field):
 
     widget = widgets.TextInput()
 
-    def __init__(self, label=None, validators=None, render_kw=None, **kwargs):
-        render_kw = render_kw or {}
-        render_kw["data-suppress-enter"] = "1"
+    def __init__(self, label=None, validators=None, suppress_enter=True, render_kw=None, **kwargs):
+        if suppress_enter:
+            render_kw = render_kw or {}
+            render_kw["data-suppress-enter"] = "1"
         super().__init__(label, validators, render_kw=render_kw, **kwargs)
 
     def _value(self):
