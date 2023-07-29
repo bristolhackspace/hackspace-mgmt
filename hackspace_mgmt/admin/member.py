@@ -1,8 +1,8 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask import request, url_for
+from flask import request
 from hackspace_mgmt.models import db, Member, Card
-from hackspace_mgmt.admin.card import SerialField
+from hackspace_mgmt.forms import SerialField, ViewHelperJsMixin
 
 
 member_columns = (
@@ -26,7 +26,7 @@ member_columns = (
     "notes",
 )
 
-class MemberView(ModelView):
+class MemberView(ViewHelperJsMixin, ModelView):
     can_view_details = True
     can_export = True
     column_list = member_columns
@@ -64,15 +64,6 @@ class MemberView(ModelView):
             "placeholder": "(optional)"
         }
     }
-
-    def render(self, template, **kwargs):
-        """
-        using extra js in render method allow use
-        url_for that itself requires an app context
-        """
-        self.extra_js = [url_for("static", filename="js/helpers.js")]
-
-        return super().render(template, **kwargs)
 
     def search_placeholder(self):
         return "Member name or email"
