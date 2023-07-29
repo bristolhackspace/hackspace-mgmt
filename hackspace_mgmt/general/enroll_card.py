@@ -11,12 +11,12 @@ from sqlalchemy.exc import NoResultFound
 
 class CardInfoForm(form.BaseForm):
     number_on_front = fields.IntegerField(
-        'Number on front of card',
+        'Number on front of card/keyfob',
         validators=[DataRequired()],
         render_kw={"autocomplete": "off"}
     )
     number_on_front_verify = fields.IntegerField(
-        'Confirm number on front of card', 
+        'Confirm number on front of card/keyfob', 
         validators=[EqualTo("number_on_front", "Values do not match")],
         render_kw={"autocomplete": "off"}
     )
