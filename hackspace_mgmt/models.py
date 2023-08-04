@@ -55,6 +55,7 @@ class Member(db.Model):
 
     cards: Mapped[List["Card"]] = relationship(back_populates="member")
     inductions: Mapped[List["Induction"]] = relationship(back_populates="member", foreign_keys="Induction.member_id")
+    labels: Mapped[List["Label"]] = relationship(back_populates="member")
 
     @hybrid_property
     def display_name(self):
@@ -114,3 +115,12 @@ class Induction(db.Model):
     member: Mapped["Member"] = relationship(back_populates="inductions", foreign_keys=[member_id])
     inductor: Mapped["Member"] = relationship(foreign_keys=[inducted_by])
     machine: Mapped["Machine"] = relationship(back_populates="inductions")
+
+class Label(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    member_id: Mapped[int] = mapped_column(ForeignKey("member.id"), nullable=True)
+    expiry: Mapped[date] = mapped_column(nullable=False)
+    caption: Mapped[str] = mapped_column(String(255), nullable=False)
+    printed: Mapped[bool] = mapped_column(nullable=False, default=False)
+
+    member: Mapped["Member"] = relationship(back_populates="labels")
