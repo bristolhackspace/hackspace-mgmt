@@ -72,4 +72,4 @@ class MemberView(ViewHelperJsMixin, ModelView):
         return request.headers.get("X-Remote-User") == "admin"
 
 def create_views(admin: Admin):
-    admin.add_view(MemberView(Member, db.session, category="Access Control"))
+    admin.add_view(MemberView(Member, db.session, category="Membership"))

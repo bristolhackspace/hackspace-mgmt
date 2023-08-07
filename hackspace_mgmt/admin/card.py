@@ -24,4 +24,4 @@ class CardView(ViewHelperJsMixin, ModelView):
         return "Member or number"
 
 def create_views(admin: Admin):
-    admin.add_view(CardView(Card, db.session, category="Access Control"))
+    admin.add_view(CardView(Card, db.session, category="Membership"))
