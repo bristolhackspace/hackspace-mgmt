@@ -1,11 +1,12 @@
 
-from wtforms import fields, ValidationError
+from wtforms import fields
 from wtforms.validators import EqualTo, DataRequired
-from flask import flash, redirect, request
+from flask import flash, redirect, request, url_for
 from flask_admin import form, Admin, BaseView, expose
-from flask_admin.helpers import get_redirect_target, validate_form_on_submit, get_form_data
-from hackspace_mgmt.models import db, Card, Member
+from flask_admin.helpers import get_redirect_target, validate_form_on_submit
+from hackspace_mgmt.models import db, Card
 from hackspace_mgmt.forms import SerialField
+from markupsafe import Markup
 from sqlalchemy.exc import NoResultFound
 
 
@@ -23,10 +24,20 @@ class CardInfoForm(form.BaseForm):
     email = fields.EmailField(
         "Email you signed up with",
         validators=[DataRequired()],
-        render_kw={"autocomplete": "off"}
+        render_kw={"autocomplete": "off"},
+        description="If you have forgotten then ask a committee member and we'll look it up for you."
     )
 
     intermediate = True
+
+    def __init__(self, formdata=None, obj=None, prefix='', **kwargs):
+        super().__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
+
+        keycard_url = url_for("static", filename="images/keycards.jpg")
+        keycard_help = "If this number is worn out then ask a committee member and we'll look it up for you."
+        self.number_on_front_verify.description = Markup(
+            f"<img src='{keycard_url}' /> {keycard_help}"
+        )
 
     def validate(self, extra_validators=None):
         if not super().validate(extra_validators=extra_validators):
