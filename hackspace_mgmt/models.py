@@ -100,6 +100,9 @@ class MachineController(db.Model):
     machine: Mapped["Machine"] = relationship(back_populates="controllers")
     requires_update: Mapped[bool] = mapped_column()
     powered: Mapped[bool] = mapped_column()
+    idle_timeout: Mapped[int] = mapped_column(nullable=False, default=-1)
+    idle_power_threshold: Mapped[int] = mapped_column(nullable=False, default=50)
+    invert_logout_button: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     def __str__(self):
         return hex(self.mac)

@@ -4,8 +4,11 @@ from flask import (
 )
 from .models import db, Member, Card, Machine, MachineController, Induction, InductionState
 from sqlalchemy.exc import NoResultFound
+import logging
 
 bp = Blueprint('machine_api', __name__, url_prefix='/api/machines')
+
+logger = logging.getLogger(__name__)
 
 def controller_from_mac(machine_mac, join_machine=True):
     machine_mac = int(machine_mac, 16)
@@ -44,19 +47,26 @@ def status(machine_mac):
 
     controller = controller_from_mac(machine_mac)
 
-    powered = machine_status.get("power")
-    if powered is not None and powered != controller.powered:
-        controller.powered = powered
-        db.session.commit()
-        if not powered:
-            return {"unlocked": False}
+    logger.info(f"Status request: {machine_status}")
+
+    response = {}
+
+    has_settings = machine_status.get("has_settings", False)
+    if not has_settings:
+        response["idle_timeout"] = controller.idle_timeout
+        response["idle_power_threshold"] = controller.idle_power_threshold
+        response["invert_logout_button"] = controller.invert_logout_button
+
 
     if controller.requires_update:
         controller.requires_update = False
         db.session.commit()
+        # Override all other responses
         return {"firmware_update": url_for('machine_api.firmware_update', _external=True)}
 
-    return {}
+    logger.info(f"Status response: {response}")
+
+    return response
 
 @bp.route('/firmware_update')
 def firmware_update():
