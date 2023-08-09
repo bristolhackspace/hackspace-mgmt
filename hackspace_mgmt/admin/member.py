@@ -1,9 +1,11 @@
-from flask_admin import Admin
+from flask_admin import form, Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
-from flask import request
+from flask_admin.helpers import get_redirect_target, validate_form_on_submit
+from flask import request, flash, redirect
 from hackspace_mgmt.models import db, Member, Card
 from hackspace_mgmt.forms import SerialField, ViewHelperJsMixin
-
+from wtforms import fields
+from wtforms.validators import DataRequired
 
 member_columns = (
     "first_name",
@@ -26,6 +28,19 @@ member_columns = (
     "notes",
 )
 
+column_labels = {
+    'preferred_name': "Preferred full name (including surname)",
+    'discourse': "Discourse invite status",
+    'newsletter': "Added to newsletter? (currently mailchimp)"
+}
+
+column_descriptions = {
+    'preferred_name': (
+        "This must include the surname unless the member uses a mononym." +
+        " Leave blank if not needed."
+    )
+}
+
 class MemberView(ViewHelperJsMixin, ModelView):
     can_view_details = True
     can_export = True
@@ -45,19 +60,9 @@ class MemberView(ViewHelperJsMixin, ModelView):
         (Card, dict(form_overrides = {"card_serial": SerialField}))
     ]
 
-    column_labels = {
-        'preferred_name': "Preferred full name (including surname)",
-        'discourse': "Discourse invite status",
-        'newsletter': "Added to newsletter? (currently mailchimp)"
-    }
+    column_labels = column_labels
 
-    column_descriptions = {
-        'preferred_name': (
-            "This must include the surname unless the member uses a mononym." +
-            " Leave blank if not needed."
-        )
-    }
-
+    column_descriptions = column_descriptions
 
     form_widget_args = {
         "preferred_name": {
@@ -71,5 +76,54 @@ class MemberView(ViewHelperJsMixin, ModelView):
     def is_accessible(self):
         return request.headers.get("X-Remote-User") == "admin"
 
+
+class NewMemberForm(form.BaseForm):
+    first_name = fields.StringField(
+        validators=[DataRequired()],
+        render_kw={"autocomplete": "off"}
+    )
+    last_name = fields.StringField()
+    preferred_name = fields.StringField(
+        column_labels["preferred_name"],
+        description=column_descriptions["preferred_name"],
+        render_kw={
+            "placeholder": "(optional)",
+            "autocomplete": "off"
+        }
+    )
+    email = fields.EmailField(
+        validators=[DataRequired()],
+        render_kw={"autocomplete": "off"}
+    )
+    card_number = fields.IntegerField(
+        'Number on front of card/keyfob',
+        render_kw={"autocomplete": "off"}
+    )
+
+class NewMemberView(BaseView):
+
+    @expose('/', methods=('GET', 'POST'))
+    def index(self):
+        return_url = get_redirect_target() or self.get_url('.index')
+
+        member_form = NewMemberForm(request.form)
+
+        if validate_form_on_submit(member_form):
+            new_member = Member(
+                first_name = member_form.first_name.data,
+                last_name = member_form.last_name.data,
+                preferred_name = member_form.preferred_name.data,
+                email = member_form.email.data,
+            )
+            db.session.add(new_member)
+            db.session.commit()
+            flash(f'New member created', 'success')
+            return redirect(return_url)
+
+        return self.render('admin/new_member.html', return_url=return_url, form=member_form)
+
+
 def create_views(admin: Admin):
     admin.add_view(MemberView(Member, db.session, category="Membership"))
+    admin.add_view(NewMemberView("New Member", endpoint="new_member", category="Membership"))
+
