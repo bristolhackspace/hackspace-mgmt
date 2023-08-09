@@ -35,12 +35,12 @@ class Member(db.Model):
     last_name: Mapped[str] = mapped_column(String(80), nullable=True)
     preferred_name: Mapped[str] = mapped_column(String(160), nullable=True)
 
-    discourse: Mapped[DiscourseInvite] = mapped_column(nullable=False)
-    newsletter: Mapped[bool] = mapped_column(nullable=False)
+    discourse: Mapped[DiscourseInvite] = mapped_column(nullable=False, default=DiscourseInvite.no)
+    newsletter: Mapped[bool] = mapped_column(nullable=False, default=False)
     email: Mapped[str] = mapped_column(String(300), nullable=True)
     alt_email: Mapped[str] = mapped_column(String(300), nullable=True)
     payment_ref: Mapped[str] = mapped_column(String(200), nullable=True)
-    payment_active: Mapped[bool] = mapped_column(nullable=False)
+    payment_active: Mapped[bool] = mapped_column(nullable=False, default=False)
     join_date: Mapped[date] = mapped_column(nullable=False, default=date.today)
     end_date: Mapped[date] = mapped_column(nullable=True)
     end_reason: Mapped[str] = mapped_column(String(500), nullable=True)
@@ -77,7 +77,7 @@ class Card(db.Model):
     card_serial: Mapped[int] = mapped_column(unique=True, nullable=True)
     number_on_front: Mapped[int] = mapped_column(unique=True, nullable=True)
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"), nullable=True)
-    lost: Mapped[bool] = mapped_column(nullable=False)
+    lost: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     member: Mapped["Member"] = relationship(back_populates="cards")
 
