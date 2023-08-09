@@ -1,0 +1,22 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+{% block header %}<h3>Bulk enroll</h3>{% endblock %}
+    {% call lib.form_tag(action=None) %}
+        {{ lib.render_form_fields(form, form_opts=None) }}
+        <hr>
+        <div class="form-group">
+        <div class="col-md-offset-2 col-md-10 submit-row">
+            {% if form.intermediate %}
+            <input type="submit" class="btn btn-primary" value="{{ _gettext('Next') }}" />
+            {% else %}
+            <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
+            {% endif %}
+            {% if return_url %}
+            <a href="{{ return_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
+            {% endif %}
+        </div>
+        </div>
+    {% endcall %}
+{% endblock %}
