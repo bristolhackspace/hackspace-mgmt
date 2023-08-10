@@ -117,7 +117,22 @@ class NewMemberView(BaseView):
             )
             db.session.add(new_member)
             db.session.commit()
-            flash(f'New member created', 'success')
+
+            card_update = db.update(Card).where(Card.number_on_front==member_form.card_number.data)
+            card_update = card_update.values(member_id=new_member.id)
+            result = db.session.execute(card_update)
+            if not result.rowcount:
+                card = Card(
+                    number_on_front=member_form.card_number.data,
+                    member_id=new_member.id
+                )
+                db.session.add(card)
+                card_type = "unenrolled"
+            else:
+                card_type = "pre-enrolled"
+            db.session.commit()
+
+            flash(f'New member created with {card_type} card.', 'success')
             return redirect(return_url)
 
         return self.render('admin/new_member.html', return_url=return_url, form=member_form)
