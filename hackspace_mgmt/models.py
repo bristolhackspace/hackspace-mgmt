@@ -37,6 +37,7 @@ class Member(db.Model):
 
     discourse: Mapped[DiscourseInvite] = mapped_column(nullable=False, default=DiscourseInvite.no)
     newsletter: Mapped[bool] = mapped_column(nullable=False, default=False)
+    welcome_email_sent: Mapped[bool] = mapped_column(nullable=False, default=False)
     email: Mapped[str] = mapped_column(String(300), nullable=True)
     alt_email: Mapped[str] = mapped_column(String(300), nullable=True)
     payment_ref: Mapped[str] = mapped_column(String(200), nullable=True)

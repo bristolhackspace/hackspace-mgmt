@@ -16,6 +16,7 @@ member_columns = (
     "join_date",
     "discourse",
     "newsletter",
+    "welcome_email_sent",
     "payment_ref",
     "payment_active",
     "address1",
