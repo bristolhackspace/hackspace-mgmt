@@ -23,7 +23,7 @@ class InductionState(enum.Enum):
 class DiscourseInvite(enum.Enum):
     no = "no"
     invited = "invited"
-    expired = "expired"
+    emailed = "emailed"
     accepted = "accepted"
 
     def __str__(self):
