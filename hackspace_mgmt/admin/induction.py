@@ -9,7 +9,7 @@ class InductionView(ModelView):
     column_searchable_list = ('member.display_name', 'machine.name')
     form_ajax_refs = {
         'member': QueryAjaxModelLoader('member', db.session, Member, fields=['display_name'], page_size=10, placeholder="Please select member"),
-        'inductor': QueryAjaxModelLoader('member', db.session, Member, fields=['display_name'], page_size=10, placeholder="Please select member")
+        'inductor': QueryAjaxModelLoader('inductor', db.session, Member, fields=['display_name'], page_size=10, placeholder="Please select member")
     }
 
     def search_placeholder(self):

@@ -113,11 +113,11 @@ class Induction(db.Model):
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"))
     machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"))
     state: Mapped[InductionState] = mapped_column(nullable=False)
-    inducted_by: Mapped[int] = mapped_column(ForeignKey("member.id"))
+    inducted_by: Mapped[Optional[int]] = mapped_column(ForeignKey("member.id"))
     inducted_on: Mapped[date] = mapped_column(nullable=False, default=date.today)
 
     member: Mapped["Member"] = relationship(back_populates="inductions", foreign_keys=[member_id])
-    inductor: Mapped["Member"] = relationship(foreign_keys=[inducted_by])
+    inductor: Mapped[Optional["Member"]] = relationship(foreign_keys=[inducted_by])
     machine: Mapped["Machine"] = relationship(back_populates="inductions")
 
 class Label(db.Model):
