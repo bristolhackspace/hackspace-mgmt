@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import String, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.functions import coalesce, concat
@@ -35,7 +35,7 @@ class Member(db.Model):
     last_name: Mapped[str] = mapped_column(String(80), nullable=True)
     preferred_name: Mapped[str] = mapped_column(String(160), nullable=True)
 
-    discourse: Mapped[DiscourseInvite] = mapped_column(nullable=False, default=DiscourseInvite.no)
+    discourse: Mapped[DiscourseInvite] = mapped_column(Enum(DiscourseInvite, name="discourse_invite"), nullable=False, default=DiscourseInvite.no)
     newsletter: Mapped[bool] = mapped_column(nullable=False, default=False)
     welcome_email_sent: Mapped[bool] = mapped_column(nullable=False, default=False)
     email: Mapped[str] = mapped_column(String(300), nullable=True)
@@ -112,7 +112,7 @@ class Induction(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"))
     machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"))
-    state: Mapped[InductionState] = mapped_column(nullable=False)
+    state: Mapped[InductionState] = mapped_column(Enum(InductionState, name="induction_state"), nullable=False, default=InductionState.valid)
     inducted_by: Mapped[Optional[int]] = mapped_column(ForeignKey("member.id"))
     inducted_on: Mapped[date] = mapped_column(nullable=False, default=date.today)
 
