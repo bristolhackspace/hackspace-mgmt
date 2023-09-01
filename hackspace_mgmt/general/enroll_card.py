@@ -17,7 +17,7 @@ class CardInfoForm(form.BaseForm):
         render_kw={"autocomplete": "off"}
     )
     number_on_front_verify = fields.IntegerField(
-        'Confirm number on front of card/keyfob', 
+        'Confirm number on front of card/keyfob',
         validators=[EqualTo("number_on_front", "Values do not match")],
         render_kw={"autocomplete": "off"}
     )
@@ -114,13 +114,13 @@ class EnrollCardView(BaseView):
             db.session.commit()
             flash(f'Card {serial_form.number_on_front.data} registered successfully', 'success')
             return redirect(return_url)
-        
+
         info_form = CardInfoForm(request.form)
 
         if validate_form_on_submit(info_form):
-            return self.render('enroll_card.html', return_url=return_url, form=serial_form)
-            
-        return self.render('enroll_card.html', return_url=return_url, form=info_form)
+            return self.render('general/enroll_card.html', return_url=return_url, form=serial_form)
+
+        return self.render('general/enroll_card.html', return_url=return_url, form=info_form)
 
 
 def create_views(admin: Admin):

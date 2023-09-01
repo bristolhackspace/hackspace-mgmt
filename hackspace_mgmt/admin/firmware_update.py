@@ -29,7 +29,7 @@ class FirmwareUpdateView(BaseView):
             flash(f'Successfully saved file: {form.upload.data.filename}', 'success')
             return redirect(return_url)
 
-        return self.render('firmware_update.html', return_url=return_url, form=form)
+        return self.render('admin/firmware_update.html', return_url=return_url, form=form)
 
     def upload_form(self):
         if request.form:
