@@ -27,15 +27,6 @@ class CardInfoForm(FlaskForm):
         description="If you have forgotten then ask a committee member and we'll look it up for you."
     )
 
-    choices = fields.RadioField(
-        "Which option is correct?",
-        choices=[
-            ("a", "This one"),
-            ("b", "Not this one"),
-            ("c", "Definitely not this one")
-        ]
-    )
-
     intermediate = True
 
     def __init__(self, formdata=None, obj=None, prefix='', **kwargs):

@@ -12,9 +12,9 @@ $form-element-spacing: 0.5rem;
 $form-field-spacing: 2.0rem;
 
 @import 'components/general.scss';
-@import 'components/lists.scss';
-@import 'components/header.scss';
 @import 'components/typography.scss';
+@import 'components/lists.scss';
 @import 'components/form.scss';
+@import 'components/header.scss';
 
 @import 'site/login.scss'

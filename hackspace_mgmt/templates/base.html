@@ -25,7 +25,10 @@
     <main class="wrapper">
         <nav class="header">
             <section class="container">
-                <img src="{{ url_for('static', filename='images/hackspacelogo300x300.png') }}" class="header-logo" alt="Hackspace logo"/><h1 class="header-title">Bristol Hackspace</h1>
+                <a href="{{ url_for('general.index') }}" class="header-link">
+                    <img src="{{ url_for('static', filename='images/hackspacelogo300x300.png') }}" class="header-logo" alt="Hackspace logo"/>
+                </a>
+                <h1 class="header-title"><a href="{{ url_for('general.index') }}" class="header-link">Bristol Hackspace</a></h1>
             </section>
         </nav>
         <section class="container">

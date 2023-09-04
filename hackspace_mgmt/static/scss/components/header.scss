@@ -29,6 +29,14 @@
     }
 }
 
+.header-link {
+    color: $text-color;
+
+    &:hover {
+        color: $accent-colour;
+    }
+}
+
 .header-logo {
     height: 6rem;
     padding: 1rem;
