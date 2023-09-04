@@ -1,22 +1,40 @@
-{% extends 'admin/master.html' %}
-{% import 'admin/lib.html' as lib with context %}
+{% extends "base.html" %}
 
-{% block body %}
-{% block header %}<h3>Enroll card</h3>{% endblock %}
-    {% call lib.form_tag(action=None) %}
-        {{ lib.render_form_fields(form, form_opts=None) }}
-        <hr>
-        <div class="form-group">
-        <div class="col-md-offset-2 col-md-10 submit-row">
-            {% if form.intermediate %}
-            <input type="submit" class="btn btn-primary" value="{{ _gettext('Next') }}" />
-            {% else %}
-            <input type="submit" class="btn btn-primary" value="{{ _gettext('Save') }}" />
-            {% endif %}
-            {% if return_url %}
-            <a href="{{ return_url }}" class="btn btn-danger" role="button" {% if is_modal %}data-dismiss="modal"{% endif %}>{{ _gettext('Cancel') }}</a>
-            {% endif %}
-        </div>
-        </div>
-    {% endcall %}
+{% block title %}Hackspace home{% endblock %}
+
+{% block content %}
+<h2>Enroll card</h2>
+<form method="POST" action="{{url_for('enroll_card.index')}}">
+    {{ form.hidden_tag() }}
+    {% for field in form if field.widget.input_type != 'hidden' %}
+    <div class="field-elements">
+        {% set kwargs = {"class": "field"} %}
+        {% if field.errors %}
+        {% set _ = kwargs.update({"class": "field field-error"})%}
+        {% endif %}
+        {{ field.label }}
+        {{ field(**kwargs) | safe }}
+
+        {% if field.errors %}
+        <ul class="field-error-list">
+        {% for error in field.errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if field.description %}
+        <p class="field-description">{{ field.description }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <div class="two-column">
+        {% if form.intermediate %}
+        <input type="submit" value="Next" />
+        {% else %}
+        <input type="submit" value="Save" />
+        {% endif %}
+        <a href="{{ return_url }}" class="button button-outline" role="button">Cancel</a>
+    </div>
+</form>
 {% endblock %}

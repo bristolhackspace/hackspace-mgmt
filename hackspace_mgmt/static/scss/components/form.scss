@@ -1,0 +1,122 @@
+
+
+
+label, legend {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: .5rem;
+}
+
+input, textarea, select, button, .button {
+    width: 100%;
+    border: 0.1rem solid $border-color;
+    border-radius: .5rem;
+    padding: .6rem;
+    margin-bottom: $form-element-spacing;
+    background-color: transparent;
+
+    &:focus {
+        border-color: $accent-colour;
+        outline: 0;
+    }
+}
+
+input[type=checkbox], input[type=radio] {
+    width: auto;
+    display: inline-block;
+    margin-right: .5rem;
+}
+
+.button, button, input[type="button"], input[type="reset"], input[type="submit"] {
+    background-color: $accent-colour;
+    border-color: $accent-colour;
+    color: $accent-text;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 3.0rem;
+    letter-spacing: 0.1rem;
+    padding: 0 2.0rem;
+    text-transform: uppercase;
+    text-align: center;
+
+    &:focus, &:hover {
+        background-color: $accent-active;
+        border-color: $accent-active;
+        color: $accent-text;
+    }
+
+    &[disabled] {
+        cursor: default;
+        opacity: 0.5;
+
+        &:focus, &:hover {
+            background-color: $accent-colour;
+            border-color: $accent-colour;
+        }
+    }
+
+    &.button-outline {
+        background-color: transparent;
+        color: $accent-colour;
+
+        &:focus, &:hover {
+            color: $accent-active;
+        }
+
+        &[disabled] {
+            &:focus, &:hover {
+                border-color: inherit;
+                color: $accent-colour;
+            }
+        }
+    }
+}
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr;
+    column-gap: 1rem;
+    row-gap: 1rem;
+}
+
+@media(min-width:600px) {
+    .two-column {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.field-elements {
+    margin-bottom: $form-field-spacing;
+}
+
+ul.field {
+    list-style: none;
+    margin-bottom: $form-element-spacing;
+
+    li {
+        margin-bottom: $form-element-spacing;
+        label {
+            font-weight: normal;
+            display: inline-block;
+        }
+    }
+
+
+}
+
+.field-error-list {
+    margin-bottom: $form-element-spacing;
+}
+
+.field-error {
+    border-color: #f75151;
+    border-width: .2rem;;
+}
+
+
+.field-description {
+    margin-bottom: $form-element-spacing;
+}

@@ -1,0 +1,32 @@
+*,
+*:after,
+*:before {
+  box-sizing: inherit;
+}
+
+html {
+    font-size: 62.5%;
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 1.6em;
+    line-height: 1.6;
+    font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    color: $text-color;
+    margin: 0;
+}
+
+.container {
+    margin: 0 auto;
+    padding: 0 2.0rem;
+    max-width: 100rem;
+}
+
+.container-narrow {
+    max-width: 80rem;
+}
+
+.full-width {
+    width: 100%;
+}

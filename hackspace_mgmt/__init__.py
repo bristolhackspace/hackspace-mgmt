@@ -2,6 +2,7 @@ import os
 import logging
 
 from flask import Flask
+from flask_assets import Environment, Bundle
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -23,10 +24,14 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    assets = Environment(app)
+    scss = Bundle('scss/main.scss', filters='pyscss', depends=('scss/**/*.scss'), output='css/all.css')
+    assets.register('css_all', scss)
+
     from .models import db
     db.init_app(app)
 
-    from .general import general
+    from . import general
     general.init_app(app)
 
     from .admin import admin

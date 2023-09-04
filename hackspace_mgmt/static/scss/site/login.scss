@@ -1,0 +1,21 @@
+.login-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    list-style: none;
+    column-gap: 1rem;
+    row-gap: 1rem;
+
+    li {
+        border: 0.1rem solid #b4b4b4;
+        border-radius: 0.5rem;
+        display: block;
+        margin: 0;
+        padding: 0.5rem;
+    }
+}
+
+@media(min-width:600px) {
+    .login-options {
+        grid-template-columns: 1fr 1fr;
+    }
+}

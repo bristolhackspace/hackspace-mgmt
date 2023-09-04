@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Hackspace home{% endblock %}
+
+{% block content %}
+<p class="lead">Welcome to Bristol Hackspace Membership System</p>
+<ul class="login-options">
+    <li>
+        <h3>Card enrollment</h3>
+        <p>Enroll your card so it's ready for use on this site and protected equipment.</p>
+        <p><a class="button" href="{{url_for('enroll_card.index')}}">Enroll card</a></p>
+    </li>
+    <li>
+        <h3>Card login</h3>
+        <p>Login to this site using your access card.</p>
+        <p><a class="button" href="#">Card login</a></p>
+    </li>
+</ul>
+{% endblock %}

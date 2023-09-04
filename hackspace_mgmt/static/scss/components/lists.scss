@@ -1,0 +1,17 @@
+dl, ol, ul {
+    list-style: none;
+    margin: $standard-margin;
+    padding-left: 0;
+}
+
+ul {
+    list-style:circle inside;
+}
+
+ol {
+    list-style: decimal inside;
+}
+
+dd, dt, li {
+    margin-bottom: 1.0rem;
+}

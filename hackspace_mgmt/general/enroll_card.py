@@ -1,16 +1,15 @@
 
 from wtforms import fields
 from wtforms.validators import EqualTo, DataRequired
-from flask import flash, redirect, request, url_for
-from flask_admin import form, Admin, BaseView, expose
-from flask_admin.helpers import get_redirect_target, validate_form_on_submit
+from flask import flash, redirect, request, url_for, Blueprint, render_template
+from flask_wtf import FlaskForm
 from hackspace_mgmt.models import db, Card
 from hackspace_mgmt.forms import SerialField
 from markupsafe import Markup
 from sqlalchemy.exc import NoResultFound
 
 
-class CardInfoForm(form.BaseForm):
+class CardInfoForm(FlaskForm):
     number_on_front = fields.IntegerField(
         'Number on front of card/keyfob',
         validators=[DataRequired()],
@@ -26,6 +25,15 @@ class CardInfoForm(form.BaseForm):
         validators=[DataRequired()],
         render_kw={"autocomplete": "off"},
         description="If you have forgotten then ask a committee member and we'll look it up for you."
+    )
+
+    choices = fields.RadioField(
+        "Which option is correct?",
+        choices=[
+            ("a", "This one"),
+            ("b", "Not this one"),
+            ("c", "Definitely not this one")
+        ]
     )
 
     intermediate = True
@@ -100,28 +108,23 @@ class CardSerialForm(CardInfoForm):
         return True
 
 
-class EnrollCardView(BaseView):
+bp = Blueprint("enroll_card", __name__)
 
-    @expose('/', methods=('GET', 'POST'))
-    def index(self):
-        return_url = get_redirect_target() or self.get_url('.index')
+@bp.route("/", methods=("GET", "POST"))
+def index():
+    return_url = url_for("general.index")
+    serial_form = CardSerialForm(request.form)
 
-        serial_form = CardSerialForm(request.form)
+    if serial_form.validate_on_submit():
+        # card = serial_form.card
+        # card.card_serial = serial_form.serial_number.data
+        # db.session.commit()
+        flash(f'Card {serial_form.number_on_front.data} registered successfully', 'success')
+        return redirect(return_url)
 
-        if validate_form_on_submit(serial_form):
-            card = serial_form.card
-            card.card_serial = serial_form.serial_number.data
-            db.session.commit()
-            flash(f'Card {serial_form.number_on_front.data} registered successfully', 'success')
-            return redirect(return_url)
+    info_form = CardInfoForm(request.form)
 
-        info_form = CardInfoForm(request.form)
+    if info_form.validate_on_submit():
+        return render_template('general/enroll_card.html', return_url=return_url, form=serial_form)
 
-        if validate_form_on_submit(info_form):
-            return self.render('general/enroll_card.html', return_url=return_url, form=serial_form)
-
-        return self.render('general/enroll_card.html', return_url=return_url, form=info_form)
-
-
-def create_views(admin: Admin):
-    admin.add_view(EnrollCardView("Enroll card", endpoint="enroll"))
+    return render_template('general/enroll_card.html', return_url=return_url, form=info_form)
