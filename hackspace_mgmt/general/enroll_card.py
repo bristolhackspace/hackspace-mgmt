@@ -107,9 +107,9 @@ def index():
     serial_form = CardSerialForm(request.form)
 
     if serial_form.validate_on_submit():
-        # card = serial_form.card
-        # card.card_serial = serial_form.serial_number.data
-        # db.session.commit()
+        card = serial_form.card
+        card.card_serial = serial_form.serial_number.data
+        db.session.commit()
         flash(f'Card {serial_form.number_on_front.data} registered successfully', 'success')
         return redirect(return_url)
 
