@@ -1,0 +1,10 @@
+{% import 'utils.html' as utils with context %}
+{% extends "base.html" %}
+
+{% block title %}Hackspace home{% endblock %}
+
+{% block content %}
+<h2>Card enrollment</h2>
+<p>In order to confirm this card belongs to you we need to verify some personal information. If the information we have is incorrect then message the committee and we'll verify it manually.</p>
+{{ utils.render_form(enroll_form) }}
+{% endblock %}

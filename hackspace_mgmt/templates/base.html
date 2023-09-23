@@ -32,6 +32,13 @@
             </section>
         </nav>
         <section class="container">
+            {% if session.logged_in_member %}
+            <div style="text-align: center;">
+                <div class="login-status">
+                    <p>Logged in. Click <a href="{{ url_for('general.logout')}}">here</a> to logout.</p>
+                </div>
+            </div>
+            {% endif %}
             {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul class=flashes>

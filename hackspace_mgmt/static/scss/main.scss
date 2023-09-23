@@ -17,4 +17,5 @@ $form-field-spacing: 2.0rem;
 @import 'components/form.scss';
 @import 'components/header.scss';
 
-@import 'site/login.scss'
+@import 'site/common.scss';
+@import 'site/login.scss';

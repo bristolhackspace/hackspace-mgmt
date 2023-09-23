@@ -1,0 +1,57 @@
+
+{# ---------------------- Forms -------------------------- #}
+{% macro render_field(form, field) %}
+    <div class="field-elements">
+        {% set kwargs = {"class": "field"} %}
+        {% if field.errors %}
+        {% set _ = kwargs.update({"class": "field field-error"})%}
+        {% endif %}
+        {{ field.label }}
+        {{ field(**kwargs) | safe }}
+
+        {% if field.errors %}
+        <ul class="field-error-list">
+        {% for error in field.errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if field.description %}
+        <p class="field-description">{{ field.description }}</p>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro render_form_fields(form) %}
+    {{ form.hidden_tag() }}
+    {% for field in form if field.widget.input_type != 'hidden' %}
+    {{ render_field(form, field) }}
+    {% endfor %}
+{% endmacro %}
+
+{% macro form_tag(form=None) %}
+    <form method="POST" role="form">
+      {{ caller() }}
+    </form>
+{% endmacro %}
+
+{% macro render_form_buttons(form, return_url=None) %}
+    {% if return_url %}
+    <div class="two-column">
+        <input type="submit" value="{{ form.submit_label or 'Save' }}" />
+        <a href="{{ return_url }}" class="button button-outline" role="button">Cancel</a>
+    </div>
+    {% else %}
+    <div>
+        <input type="submit" value="{{ form.submit_label or 'Save' }}" />
+    </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_form(form, return_url=None) -%}
+    {% call form_tag() %}
+        {{ render_form_fields(form) }}
+        {{ render_form_buttons(form, return_url) }}
+    {% endcall %}
+{% endmacro %}

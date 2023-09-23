@@ -79,6 +79,7 @@ class Card(db.Model):
     number_on_front: Mapped[int] = mapped_column(unique=True, nullable=True)
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"), nullable=True)
     lost: Mapped[bool] = mapped_column(nullable=False, default=False)
+    unverified_serial: Mapped[int] = mapped_column(unique=True, nullable=True)
 
     member: Mapped["Member"] = relationship(back_populates="cards")
 

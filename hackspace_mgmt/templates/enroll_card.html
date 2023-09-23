@@ -1,0 +1,10 @@
+{% import 'utils.html' as utils with context %}
+{% extends "base.html" %}
+
+{% block title %}Hackspace home{% endblock %}
+
+{% block content %}
+<h2>Card enrollment</h2>
+<p>The card you scanned was not recognised. If this is your first time using this card then please fill in the information below to get it enrolled. If you scanned the wrong card then click <a href="{{ url_for('general.login')}}">here</a> to go back to the login page.</p>
+{{ utils.render_form(enroll_form) }}
+{% endblock %}

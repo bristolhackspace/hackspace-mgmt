@@ -230,6 +230,14 @@ input[type=checkbox], input[type=radio] {
         border: 0.1rem solid #d1d1d1;
         padding: 0.5rem; }
 
+.login-status {
+  border: 0.1rem solid #b4b4b4;
+  border-radius: 0.5rem;
+  display: inline-block;
+  margin: 0 0 1.5rem 0; }
+  .login-status p {
+    margin: 0.5rem; }
+
 .login-options {
   display: grid;
   grid-template-columns: 1fr;
