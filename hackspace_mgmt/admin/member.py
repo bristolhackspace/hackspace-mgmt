@@ -1,5 +1,6 @@
 from flask_admin import form, Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin.helpers import get_redirect_target, validate_form_on_submit
 from flask import request, flash, redirect
 from hackspace_mgmt.models import db, Member, Card
@@ -27,6 +28,7 @@ member_columns = (
     "end_date",
     "end_reason",
     "notes",
+    "cards",
 )
 
 column_labels = {
@@ -57,9 +59,9 @@ class MemberView(ViewHelperJsMixin, ModelView):
         'alt_email'
     )
 
-    inline_models = [
-        (Card, dict(form_overrides = {"card_serial": SerialField}))
-    ]
+    form_ajax_refs = {
+        'cards': QueryAjaxModelLoader('cards', db.session, Card, fields=['number_on_front'], page_size=10, placeholder="####", minimum_input_length=4),
+    }
 
     column_labels = column_labels
 
