@@ -1,11 +1,11 @@
 
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field) %}
-    <div class="field-elements">
+{% if field.errors %}
+{% set error_class = "field-error" %}
+{% endif %}
+    <div class="field-elements {{ error_class }}">
         {% set kwargs = {"class": "field"} %}
-        {% if field.errors %}
-        {% set _ = kwargs.update({"class": "field field-error"})%}
-        {% endif %}
         {{ field.label }}
         {{ field(**kwargs) | safe }}
 

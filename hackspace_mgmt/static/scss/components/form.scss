@@ -112,8 +112,10 @@ ul.field {
 }
 
 .field-error {
-    border-color: #f75151;
-    border-width: .2rem;;
+    border: 0.2rem solid #f75151;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+
 }
 
 
