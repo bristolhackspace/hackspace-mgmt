@@ -9,6 +9,7 @@ import logging
 
 from hackspace_mgmt.models import db, Card, Member
 from hackspace_mgmt.forms import SerialField
+from .helpers import login_required
 
 bp = Blueprint("general", __name__)
 
@@ -26,11 +27,8 @@ class CardLoginForm(FlaskForm):
     submit_label = "Login"
 
 @bp.route("/", methods=("GET", "POST"))
+@login_required
 def index():
-    if "logged_in_member" not in session:
-        return redirect(url_for("general.login"))
-    member = db.session.get(Member, session["logged_in_member"])
-
     return render_template("index.html")
 
 @bp.route("/login", methods=("GET", "POST"))
@@ -46,14 +44,13 @@ def login():
             card = db.session.execute(card_select).scalar_one()
             if card.member is not None:
                 session["logged_in_member"] = card.member.id
-                flash(f"Logged in as {card.member}")
             else:
                 flash("Card not yet registered to a member")
             return redirect(url_for("general.index"))
         except NoResultFound:
             session["scanned_card_serial"] = card_serial
             return redirect(url_for("general.enroll_card_number"))
-        
+
     return render_template("login.html", login_form=login_form)
 
 @bp.route("/logout")

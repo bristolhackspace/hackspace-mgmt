@@ -32,10 +32,10 @@
             </section>
         </nav>
         <section class="container">
-            {% if session.logged_in_member %}
+            {% if g.member %}
             <div style="text-align: center;">
                 <div class="login-status">
-                    <p>Logged in. Click <a href="{{ url_for('general.logout')}}">here</a> to logout.</p>
+                    <p>Logged in as {{ g.member }}. Click <a href="{{ url_for('general.logout')}}">here</a> to logout.</p>
                 </div>
             </div>
             {% endif %}
