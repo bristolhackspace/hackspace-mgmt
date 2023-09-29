@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import String, ForeignKey, Enum
+from sqlalchemy import String, ForeignKey, Enum, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.functions import coalesce, concat
@@ -121,6 +121,8 @@ class Induction(db.Model):
     inductor: Mapped[Optional["Member"]] = relationship(foreign_keys=[inducted_by])
     machine: Mapped["Machine"] = relationship(back_populates="inductions")
 
+    __table_args__ = (UniqueConstraint("member_id", "machine_id"),)
+
 class Label(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"), nullable=True)
@@ -129,3 +131,12 @@ class Label(db.Model):
     printed: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     member: Mapped["Member"] = relationship(back_populates="labels")
+
+class Quiz(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(String(), nullable=True)
+    questions: Mapped[str] = mapped_column(String(), nullable=False)
+    machine_id: Mapped[Optional[int]] = mapped_column(ForeignKey("machine.id"))
+
+    machine: Mapped[Optional["Machine"]] = relationship()

@@ -1,0 +1,9 @@
+{% import 'utils.html' as utils with context %}
+{% extends "base.html" %}
+
+{% block title %}Hackspace home{% endblock %}
+
+{% block content %}
+<h2>{{ quiz_title }}</h2>
+{{ utils.render_form(quiz_form) }}
+{% endblock %}
