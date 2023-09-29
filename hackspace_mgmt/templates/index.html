@@ -4,5 +4,24 @@
 {% block title %}Hackspace home{% endblock %}
 
 {% block content %}
-<p class="lead">Welcome to Bristol Hackspace Membership System</p>
+<h2>Your equipment</h2>
+<p>You currently have valid inductions for the following equipment:</p>
+<ul>
+    {% for machine in inducted_machines %}
+    <li>{{ machine.name }}</li>
+    {% endfor %}
+</ul>
+<h2>Online inductions</h2>
+<p>Complete one of the induction quizzes below to self-induct on a piece of equipment.</p>
+<ul class="two-col-boxes">
+    {% for quiz in quizzes %}
+    <li>
+        <h3>{{ quiz.title }}</h3>
+        {% if quiz.description %}
+        <p>{{ quiz.description }}</p>
+        {% endif %}
+        <a href="{{ url_for('quiz.index', quiz_id=quiz.id) }}" class="button">Begin</a>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}

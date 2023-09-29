@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, session, url_for, request
+from flask import Blueprint, flash, redirect, render_template, session, url_for, request, g
 from flask_wtf import FlaskForm
 from markupsafe import Markup
 from sqlalchemy.exc import NoResultFound
@@ -7,7 +7,7 @@ from wtforms.validators import EqualTo, DataRequired
 
 import logging
 
-from hackspace_mgmt.models import db, Card, Member
+from hackspace_mgmt.models import db, Card, Member, Quiz, Machine, Induction, InductionState
 from hackspace_mgmt.forms import SerialField
 
 from . import quiz
@@ -31,7 +31,13 @@ class CardLoginForm(FlaskForm):
 @bp.route("/", methods=("GET", "POST"))
 @login_required
 def index():
-    return render_template("index.html")
+    query = db.select(Machine).where(Machine.inductions.any(
+        Induction.member_id==g.member.id and Induction.state == InductionState.valid
+    ))
+    inducted_machines = db.session.execute(query).scalars()
+
+    quizzes = db.session.execute(db.select(Quiz)).scalars()
+    return render_template("index.html", quizzes=quizzes, inducted_machines=inducted_machines)
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
