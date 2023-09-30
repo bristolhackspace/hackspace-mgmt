@@ -5,12 +5,16 @@
 
 {% block content %}
 <h2>Your equipment</h2>
+{% if inducted_machines %}
 <p>You currently have valid inductions for the following equipment:</p>
 <ul>
     {% for machine in inducted_machines %}
     <li>{{ machine.name }}</li>
     {% endfor %}
 </ul>
+{% else %}
+<p>You are not currently inducted on any access controlled equipment.</p>
+{% endif %}
 <h2>Online inductions</h2>
 <p>Complete one of the induction quizzes below to self-induct on a piece of equipment.</p>
 <ul class="two-col-boxes">

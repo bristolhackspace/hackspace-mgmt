@@ -34,9 +34,9 @@ def index():
     query = db.select(Machine).where(Machine.inductions.any(
         Induction.member_id==g.member.id and Induction.state == InductionState.valid
     ))
-    inducted_machines = db.session.execute(query).scalars()
+    inducted_machines = db.session.scalars(query).all()
 
-    quizzes = db.session.execute(db.select(Quiz)).scalars()
+    quizzes = db.session.scalars(db.select(Quiz)).all()
     return render_template("index.html", quizzes=quizzes, inducted_machines=inducted_machines)
 
 @bp.route("/login", methods=("GET", "POST"))
