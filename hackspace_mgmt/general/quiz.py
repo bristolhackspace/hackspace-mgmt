@@ -92,17 +92,25 @@ def index(quiz_id):
 
     for key, question in quiz_data.items():
             qtype = question["type"]
+            label = md_parse(question["label"])
             if qtype == "pick_one":
                 choices = list((k, md_parse(v)) for k,v in question["answers"].items())
                 answer_validator = Exactly(question["correct_answer"], question.get("incorrect_hint"))
-                field = fields.RadioField(md_parse(question["label"]), choices=choices, validators=[InputRequired(), answer_validator])
+                field = fields.RadioField(label, choices=choices, validators=[InputRequired(), answer_validator])
             elif qtype == "select_all":
                 answer_validator = Exactly(set(question["correct_answers"]), question.get("incorrect_hint"))
                 choices = list((k, md_parse(v)) for k,v in question["answers"].items())
-                field = MultiCheckboxField(md_parse(question["label"]), choices=choices, validators=[answer_validator])
+                field = MultiCheckboxField(label, choices=choices, validators=[answer_validator])
             elif qtype == "yes_no":
                 answer_validator = Exactly(question["correct_answer"], question.get("incorrect_hint"))
-                field = fields.BooleanField(md_parse(question["label"]), validators=[answer_validator])
+                field = fields.BooleanField(label, validators=[answer_validator])
+            elif qtype == "textbox":
+                answer_validator = Exactly(question["correct_answer"], question.get("incorrect_hint"))
+                field = fields.StringField(
+                    label,
+                    validators=[InputRequired(), answer_validator],
+                    render_kw={"autocomplete": "off"},
+                )
             setattr(QuizForm, key, field)
 
     quiz_form = QuizForm(request.form, quiz_data=quiz_data)
@@ -122,6 +130,7 @@ def index(quiz_id):
             ),
         )
         db.session.execute(upsert_stmt)
+        db.session.commit()
         flash(f"All correct! You should now be able to use the {quiz.machine.name}.")
         return redirect(url_for("general.index"))
     return render_template("quiz.html", quiz_form=quiz_form, quiz_title=quiz.title)
