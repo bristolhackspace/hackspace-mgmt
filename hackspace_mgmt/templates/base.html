@@ -19,6 +19,31 @@
     <link rel="stylesheet" href="{{ ASSET_URL }}"/>
     {% endassets %}
     {% endblock %}
+
+    {% block logout_timer %}
+    <script type="text/javascript">
+    var idleTime = 0;
+    document.addEventListener("DOMContentLoaded", function (event) {
+        // Increment the idle time counter every minute.
+        var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+
+        // Zero the idle timer on mouse movement.
+        document.onmousemove = function (e) {
+            idleTime = 0;
+        };
+        document.onkeypress = function (e) {
+            idleTime = 0;
+        };
+    });
+
+    function timerIncrement() {
+        idleTime = idleTime + 1;
+        if (idleTime > 7) { // 8 minutes
+            window.location.href = "/logout";
+        }
+    }
+    </script>
+    {% endblock %}
 </head>
 
 <body>
@@ -34,9 +59,7 @@
         <section class="container">
             {% if g.member %}
             <div style="text-align: center;">
-                <div class="login-status">
-                    <p>Logged in as {{ g.member }}. Click <a href="{{ url_for('general.logout')}}">here</a> to logout.</p>
-                </div>
+                <a href="{{ url_for('general.logout')}}" class="button">Logged in as {{ g.member }}. Tap here to logout.</a>
             </div>
             {% endif %}
             {% with messages = get_flashed_messages() %}

@@ -49,9 +49,11 @@
     {% endif %}
 {% endmacro %}
 
-{% macro render_form(form, return_url=None) -%}
+{% macro render_form(form, return_url=None, hide_buttons=False) -%}
     {% call form_tag() %}
         {{ render_form_fields(form) }}
+        {% if not hide_buttons %}
         {{ render_form_buttons(form, return_url) }}
+        {% endif %}
     {% endcall %}
 {% endmacro %}

@@ -2,7 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, session, url_for,
 from flask_wtf import FlaskForm
 from markupsafe import Markup
 from sqlalchemy.exc import NoResultFound
-from wtforms import fields
+from wtforms import fields, widgets
 from wtforms.validators import EqualTo, DataRequired
 
 import logging
@@ -21,8 +21,10 @@ logger = logging.Logger(__name__)
 class CardLoginForm(FlaskForm):
     serial_number = SerialField(
         'Remove card/fob from wallet (if applicable) and scan on reader above',
+        widget=widgets.HiddenInput(),
         suppress_enter=False,
-        render_kw={"autofocus": "1", "autocomplete": "off"},
+        # render_kw={"autofocus": "1", "autocomplete": "off"},
+        render_kw={"autocomplete": "off"},
         description="Removing from wallet is required to avoid accidentally scanning the wrong card"
     )
 

@@ -1,10 +1,41 @@
 {% import 'utils.html' as utils with context %}
 {% extends "base.html" %}
 
+{% block head %}
+{{ super() }}
+<script type="text/javascript">
+    let hexchars = "0123456789abcdef";
+    function clearSerialField() {
+        document.getElementById("serial_number").value = "";
+    }
+
+    let serialClearTimeout = setTimeout(clearSerialField, 500);
+    document.onkeypress = function (e) {
+        e = e || window.event;
+        if ("key" in e && e.key == "Enter") {
+            document.getElementById("login-form").submit()
+        } else if ("key" in e && hexchars.includes(e.key)) {
+            document.getElementById("serial_number").value += e.key;
+            clearTimeout(serialClearTimeout);
+            serialClearTimeout = setTimeout(clearSerialField, 500);
+        }
+    };
+</script>
+{% endblock %}
+
+{% block logout_timer %}
+{% endblock %}
+
 {% block title %}Hackspace home{% endblock %}
 
 {% block content %}
-<p class="lead">Welcome to Bristol Hackspace Membership System</p>
-<h2>Login</h2>
-{{ utils.render_form(login_form) }}
+<div style="text-align:center">
+    <p class="lead">Welcome to Bristol Hackspace Membership System</p>
+    <p>Scan your card/keyfob on the reader to login</p>
+    <p><img src="{{ url_for('static', filename='images/card_rfid.png') }}" /></p>
+</div>
+
+<form method="POST" role="form" id="login-form">
+    {{ utils.render_form_fields(login_form) }}
+</form>
 {% endblock %}
