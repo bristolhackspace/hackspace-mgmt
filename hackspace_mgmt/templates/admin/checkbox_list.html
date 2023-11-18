@@ -1,0 +1,11 @@
+
+{% for subfield in field %}
+<div class="checkbox">
+    <label>
+    {% if subfield.checked %}
+    {% set selected = " checked" %}
+    {% endif %}
+    <input id="{{subfield.id}}" name="{{ subfield.name }}" value="{{ subfield._value() }}" type="checkbox"{{ selected }}>{{subfield.label.text}}
+    </label>
+</div>
+{% endfor %}
