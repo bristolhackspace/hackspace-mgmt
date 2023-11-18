@@ -5,5 +5,13 @@
 
 {% block content %}
 <h2>{{ quiz_title }}</h2>
-{{ utils.render_form(quiz_form) }}
+{% call utils.form_tag() %}
+    {{ quiz_form.hidden_tag() }}
+    {% for field in quiz_form if field.widget.input_type != 'hidden' %}
+    {{ utils.render_field(quiz_form, field) }}
+    <hr/>
+    {% endfor %}
+    {{ utils.render_form_buttons(quiz_form, return_url) }}
+{% endcall %}
+
 {% endblock %}
