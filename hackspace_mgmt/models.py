@@ -25,6 +25,7 @@ class DiscourseInvite(enum.Enum):
     invited = "invited"
     emailed = "emailed"
     accepted = "accepted"
+    alumni = "alumni"
 
     def __str__(self):
         return f'{self.name}'
