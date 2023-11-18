@@ -22,13 +22,23 @@ def controller_from_mac(machine_mac, join_machine=True):
 def unlock(machine_mac):
     controller = controller_from_mac(machine_mac)
 
+    logger.info(f"Controller is {controller}")
+
     card_serial = int(request.args.get("card_id", "00000000"), 16)
     card_subq = db.select(Card).where(Card.card_serial==card_serial).subquery()
     member_query = db.select(Member).join(card_subq, Member.id==card_subq.c.member_id)
     member = db.one_or_404(member_query)
 
+    logger.info(f"Member is {member}")
+    logger.info(f"Machine ID is {controller.machine.id}")
+
     try:
-        induction = db.session.execute(db.select(Induction).where(Induction.member_id==member.id and Induction.machine_id==controller.machine.id)).scalar_one()
+        induction = db.session.execute(
+            db.select(Induction)
+                .where(Induction.member_id==member.id)
+                .where(Induction.machine_id==controller.machine.id)
+        ).scalar_one()
+        logger.info(f"Inductions: {induction}")
     except NoResultFound:
         abort(403)
 
