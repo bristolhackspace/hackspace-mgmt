@@ -81,6 +81,7 @@ class Card(db.Model):
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"), nullable=True)
     lost: Mapped[bool] = mapped_column(nullable=False, default=False)
     unverified_serial: Mapped[int] = mapped_column(unique=True, nullable=True)
+    door_disabled: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     member: Mapped["Member"] = relationship(back_populates="cards")
 
