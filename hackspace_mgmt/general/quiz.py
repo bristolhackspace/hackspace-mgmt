@@ -133,4 +133,4 @@ def index(quiz_id):
         db.session.commit()
         flash(f"All correct! You should now be able to use the {quiz.machine.name}.")
         return redirect(url_for("general.index"))
-    return render_template("quiz.html", quiz_form=quiz_form, quiz_title=quiz.title)
+    return render_template("quiz.html", quiz_form=quiz_form, quiz_title=quiz.title, return_url=url_for("general.index"))
