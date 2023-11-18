@@ -60,7 +60,7 @@ class MemberView(ViewHelperJsMixin, ModelView):
     column_list = member_columns
     form_columns = member_columns
     column_filters = member_columns
-    column_details_list = member_columns + ("cards",)
+    column_details_list = member_columns
     column_searchable_list = (
         'first_name',
         'last_name',
