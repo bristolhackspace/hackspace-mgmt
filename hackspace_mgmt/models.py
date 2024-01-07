@@ -99,7 +99,6 @@ class Machine(db.Model):
 
 class MachineController(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    mac: Mapped[int] = mapped_column(unique=True)
     machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"))
     machine: Mapped["Machine"] = relationship(back_populates="controllers")
     requires_update: Mapped[bool] = mapped_column()
@@ -107,9 +106,10 @@ class MachineController(db.Model):
     idle_timeout: Mapped[int] = mapped_column(nullable=False, default=-1)
     idle_power_threshold: Mapped[int] = mapped_column(nullable=False, default=50)
     invert_logout_button: Mapped[bool] = mapped_column(nullable=False, default=False)
+    hostname: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
 
     def __str__(self):
-        return hex(self.mac)
+        return self.hostname
 
 class Induction(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -140,5 +140,7 @@ class Quiz(db.Model):
     description: Mapped[str] = mapped_column(String(), nullable=True)
     questions: Mapped[str] = mapped_column(String(), nullable=False)
     machine_id: Mapped[Optional[int]] = mapped_column(ForeignKey("machine.id"))
+    intro: Mapped[str] = mapped_column(String(), nullable=False, default="")
+    hidden: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     machine: Mapped[Optional["Machine"]] = relationship()
