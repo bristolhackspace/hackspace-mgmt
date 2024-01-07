@@ -5,6 +5,7 @@
 
 {% block content %}
 <h2>{{ quiz_title }}</h2>
+<p>{{ intro_text }}</p>
 {% call utils.form_tag() %}
     {{ quiz_form.hidden_tag() }}
     {% for field in quiz_form if field.widget.input_type != 'hidden' %}

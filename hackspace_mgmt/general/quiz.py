@@ -52,7 +52,7 @@ def md_parse(text: str):
     def make_url(match):
         text = escape(match.group("text"))
         url = match.group("url")
-        return f"<a href='{url}'>{text}</a>"
+        return f"<a href='{url}' target='_blank' rel='noopener noreferrer'>{text}</a>"
     text = LINK_MD_REGEX.sub(make_url, text)
 
     def make_img(match):
@@ -133,4 +133,7 @@ def index(quiz_id):
         db.session.commit()
         flash(f"All correct! You should now be able to use the {quiz.machine.name}.")
         return redirect(url_for("general.index"))
-    return render_template("quiz.html", quiz_form=quiz_form, quiz_title=quiz.title, return_url=url_for("general.index"))
+
+    intro_text = md_parse(quiz.intro)
+
+    return render_template("quiz.html", intro_text=intro_text, quiz_form=quiz_form, quiz_title=quiz.title, return_url=url_for("general.index"))

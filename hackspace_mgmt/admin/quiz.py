@@ -12,7 +12,8 @@ class QuizView(ViewHelperJsMixin, ModelView):
     }
 
     form_overrides = {
-        "questions": TextAreaField
+        "questions": TextAreaField,
+        "intro": TextAreaField
     }
 
 
