@@ -70,7 +70,7 @@ class MemberView(ViewHelperJsMixin, ModelView):
     )
 
     form_ajax_refs = {
-        'cards': QueryAjaxModelLoader('cards', db.session, Card, fields=['number_on_front'], page_size=10, placeholder="####", minimum_input_length=4),
+        'cards': QueryAjaxModelLoader('cards', db.session, Card, fields=['number_on_front'], page_size=10, placeholder="####", minimum_input_length=3),
     }
 
     column_labels = column_labels
