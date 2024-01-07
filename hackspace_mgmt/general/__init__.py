@@ -38,7 +38,7 @@ def index():
     ))
     inducted_machines = db.session.scalars(query).all()
 
-    quizzes = db.session.scalars(db.select(Quiz)).all()
+    quizzes = db.session.scalars(db.select(Quiz).where(Quiz.hidden == False)).all()
     return render_template("index.html", quizzes=quizzes, inducted_machines=inducted_machines)
 
 @bp.route("/login", methods=("GET", "POST"))
