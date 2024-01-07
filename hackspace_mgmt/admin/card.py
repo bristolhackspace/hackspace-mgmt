@@ -6,11 +6,13 @@ from hackspace_mgmt.forms import SerialField, card_serial_formatter, ViewHelperJ
 
 
 class CardView(ViewHelperJsMixin, ModelView):
-    column_list = ('number_on_front', 'card_serial', 'member')
+    column_list = ('number_on_front', 'card_serial', 'member', 'lost', 'door_disabled')
     column_searchable_list = ('member.display_name', 'number_on_front')
     form_ajax_refs = {
         'member': QueryAjaxModelLoader('member', db.session, Member, fields=['display_name'], page_size=10, placeholder="Please select member")
     }
+
+    column_filters = ('lost', 'door_disabled')
 
     form_overrides = {
         "card_serial": SerialField
