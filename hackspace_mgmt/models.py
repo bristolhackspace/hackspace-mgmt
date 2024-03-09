@@ -131,6 +131,7 @@ class Induction(db.Model):
     state: Mapped[InductionState] = mapped_column(Enum(InductionState, name="induction_state"), nullable=False, default=InductionState.valid)
     inducted_by: Mapped[Optional[int]] = mapped_column(ForeignKey("member.id"))
     inducted_on: Mapped[date] = mapped_column(nullable=False, default=date.today)
+    can_induct: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     member: Mapped["Member"] = relationship(back_populates="inductions", foreign_keys=[member_id])
     inductor: Mapped[Optional["Member"]] = relationship(foreign_keys=[inducted_by])
