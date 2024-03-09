@@ -45,7 +45,7 @@ def index():
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
-    login_form = CardLoginForm(request.form)
+    login_form = CardLoginForm(request.form, meta={'csrf': False})
 
     if login_form.validate_on_submit():
         card_serial = login_form.serial_number.data
