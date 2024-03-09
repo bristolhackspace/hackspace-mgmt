@@ -7,7 +7,7 @@ from wtforms.validators import EqualTo, DataRequired
 
 import logging
 
-from hackspace_mgmt.models import db, Card, Member, Quiz, Machine, Induction, InductionState
+from hackspace_mgmt.models import db, Card, Member, Quiz, Machine, Induction, InductionState, LegacyMachineAuth
 from hackspace_mgmt.forms import SerialField
 
 from . import quiz
@@ -33,13 +33,15 @@ class CardLoginForm(FlaskForm):
 @bp.route("/", methods=("GET", "POST"))
 @login_required
 def index():
-    query = db.select(Machine).where(Machine.inductions.any(
+    machine_select = db.select(Machine).where(Machine.hide_from_home == False).order_by(Machine.name)
+    machines = db.session.scalars(machine_select).all()
+
+    query = db.select(Machine.id).where(Machine.inductions.any(
         Induction.member_id==g.member.id and Induction.state == InductionState.valid
     ))
-    inducted_machines = db.session.scalars(query).all()
+    inducted_machines = set(row.id for row in db.session.execute(query))
 
-    quizzes = db.session.scalars(db.select(Quiz).where(Quiz.hidden == False)).all()
-    return render_template("index.html", quizzes=quizzes, inducted_machines=inducted_machines)
+    return render_template("index.html", machines=machines, inducted_machines=inducted_machines, LegacyMachineAuth=LegacyMachineAuth)
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():

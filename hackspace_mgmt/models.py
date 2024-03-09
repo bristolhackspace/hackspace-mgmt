@@ -30,6 +30,15 @@ class DiscourseInvite(enum.Enum):
     def __str__(self):
         return f'{self.name}'
 
+class LegacyMachineAuth(enum.Enum):
+    none = "none"
+    password =  "password"
+    padlock =  "padlock"
+
+    def __str__(self):
+        return f'{self.name}'
+
+
 class Member(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column(String(80), nullable=False)
@@ -91,8 +100,12 @@ class Card(db.Model):
 class Machine(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
+    legacy_auth: Mapped[LegacyMachineAuth] = mapped_column(Enum(LegacyMachineAuth, name="legacy_auth"), nullable=False, default=LegacyMachineAuth.none)
+    legacy_password: Mapped[str] = mapped_column(String(255))
+    hide_from_home: Mapped[bool] = mapped_column(nullable=False, default=False)
     controllers: Mapped[List["MachineController"]] = relationship(back_populates="machine")
     inductions: Mapped[List["Induction"]] = relationship(back_populates="machine")
+    quizes: Mapped[List["Quiz"]] = relationship(back_populates="machine")
 
     def __str__(self):
         return self.name

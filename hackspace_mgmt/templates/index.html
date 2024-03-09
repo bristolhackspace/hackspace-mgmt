@@ -4,27 +4,34 @@
 {% block title %}Hackspace home{% endblock %}
 
 {% block content %}
-<h2>Your equipment</h2>
-{% if inducted_machines %}
-<p>You currently have valid inductions for the following equipment (not all equipment is listed currently):</p>
-<ul>
-    {% for machine in inducted_machines %}
-    <li>{{ machine.name }}</li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>You are not currently inducted on any access controlled equipment.</p>
-{% endif %}
-<h2>Online inductions</h2>
-<p>Complete one of the induction quizzes below to self-induct on a piece of equipment.</p>
+<h2>Machines</h2>
+Note that not all machines have been migrated to the online system yet.
 <ul class="two-col-boxes">
-    {% for quiz in quizzes %}
+    {% for machine in machines %}
     <li>
-        <h3>{{ quiz.title }}</h3>
-        {% if quiz.description %}
-        <p>{{ quiz.description }}</p>
+        <h3>{{ machine.name }}</h3>
+        {% if machine.id in inducted_machines %}
+        {% if machine.legacy_auth == LegacyMachineAuth.password %}
+        <p>You are inducted. The password is "{{ machine.legacy_password }}".</p>
+        {% elif machine.legacy_auth == LegacyMachineAuth.padlock %}
+        <p>You are inducted. The padlock code is {{ machine.legacy_password }}.</p>
+        {% else %}
+        <p>You are inducted on this machine.</p>
         {% endif %}
-        <a href="{{ url_for('quiz.index', quiz_id=quiz.id) }}" class="button">Begin</a>
+        {% else %}
+        <p>You are not yet inducted on this machine.</p>
+        {% endif %}
+        {% for quiz in machine.quizes if quiz.hidden == False %}
+            {% if machine.id in inducted_machines %}
+            <a href="{{ url_for('quiz.index', quiz_id=quiz.id) }}" class="button">Retake quiz</a>
+            {% else %}
+            <a href="{{ url_for('quiz.index', quiz_id=quiz.id) }}" class="button">Take quiz</a>
+            {% endif %}
+        {% else %}
+        {% if machine.id not in inducted_machines %}
+        <p>Request an induction on the forum.</p>
+        {% endif %}
+        {% endfor %}
     </li>
     {% endfor %}
 </ul>
