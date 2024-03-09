@@ -151,6 +151,16 @@ def status(hostname):
 
     return response
 
+@bp.route('/<hostname>/has_update')
+def has_update(hostname):
+    controller = controller_from_hostname(hostname)
+    if controller.requires_update:
+        controller.requires_update = False
+        db.session.commit()
+        return {"update_url": url_for('machine_api.firmware_update', _external=True)}
+    else:
+        return {}
+
 
 @bp.route('/<hostname>/settings')
 def settings(hostname):
