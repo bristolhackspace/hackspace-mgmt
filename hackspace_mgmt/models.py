@@ -101,7 +101,7 @@ class Machine(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     legacy_auth: Mapped[LegacyMachineAuth] = mapped_column(Enum(LegacyMachineAuth, name="legacy_auth"), nullable=False, default=LegacyMachineAuth.none)
-    legacy_password: Mapped[str] = mapped_column(String(255))
+    legacy_password: Mapped[str] = mapped_column(String(255), nullable=False, default="")
     hide_from_home: Mapped[bool] = mapped_column(nullable=False, default=False)
     controllers: Mapped[List["MachineController"]] = relationship(back_populates="machine")
     inductions: Mapped[List["Induction"]] = relationship(back_populates="machine")
