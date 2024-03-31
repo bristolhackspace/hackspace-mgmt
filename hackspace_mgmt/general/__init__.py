@@ -11,6 +11,7 @@ from hackspace_mgmt.models import db, Card, Member, Quiz, Machine, Induction, In
 from hackspace_mgmt.forms import SerialField
 
 from . import quiz
+from . import label
 from .helpers import login_required
 
 bp = Blueprint("general", __name__)
@@ -184,3 +185,4 @@ def enroll_personal():
 def init_app(app):
     app.register_blueprint(bp)
     app.register_blueprint(quiz.bp)
+    app.register_blueprint(label.bp)

@@ -40,6 +40,9 @@ def create_app(test_config=None):
     from . import machine_api
     app.register_blueprint(machine_api.bp)
 
+    from . import label_api
+    app.register_blueprint(label_api.bp)
+
 
 
     return app

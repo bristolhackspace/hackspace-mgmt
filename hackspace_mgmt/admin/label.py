@@ -11,4 +11,4 @@ class LabelView(ModelView):
 
 
 def create_views(admin: Admin):
-    admin.add_view(LabelView(Label, db.session, category="Access Control"))
+    admin.add_view(LabelView(Label, db.session, endpoint="label_view", category="Access Control"))

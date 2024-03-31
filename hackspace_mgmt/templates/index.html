@@ -4,6 +4,20 @@
 {% block title %}Hackspace home{% endblock %}
 
 {% block content %}
+<h2>Storage</h2>
+<ul class="two-col-boxes">
+    <li>
+        <h3>Short stay</h3>
+        <p>For short term storage of materials. Label expires in 30 days</p>
+        <a href="{{ url_for('label.index', label_type='short_stay') }}" class="button">Print short stay label</a>
+    </li>
+    <li>
+        <h3>Project box</h3>
+        <p>For storage of project related tools and materials. Labels expires in 6 months.</p>
+        <a href="{{ url_for('label.index', label_type='project_box') }}" class="button">Print project box label</a>
+    </li>
+</ul>
+
 <h2>Machines</h2>
 Note that not all machines have been migrated to the online system yet.
 <ul class="two-col-boxes">
