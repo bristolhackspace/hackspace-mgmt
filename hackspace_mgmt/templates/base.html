@@ -71,6 +71,9 @@
                 </ul>
             {% endif %}
             {% endwith %}
+            <ul class="breadcrumbs">
+                {% block breadcrumbs %}{% endblock %}
+            </ul>
             {% block content %}{% endblock %}
         </section>
 

@@ -1,0 +1,43 @@
+{% import 'utils.html' as utils with context %}
+{% extends "base.html" %}
+
+{% block title %}Hackspace home{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="{{ url_for('general.index') }}">Home</a></li>
+<li>Inductions</li>
+{% endblock %}
+
+{% block content %}
+<h2>Inductions</h2>
+<p>Note that not all machines have been migrated to the online system yet.</p>
+<ul class="two-col-boxes">
+    {% for machine in machines %}
+    <li>
+        <h3>{{ machine.name }}</h3>
+        {% if machine.id in inducted_machines %}
+        {% if machine.legacy_auth == LegacyMachineAuth.password %}
+        <p>You are inducted. The password is "{{ machine.legacy_password }}".</p>
+        {% elif machine.legacy_auth == LegacyMachineAuth.padlock %}
+        <p>You are inducted. The padlock code is {{ machine.legacy_password }}.</p>
+        {% else %}
+        <p>You are inducted on this machine.</p>
+        {% endif %}
+        {% else %}
+        <p>You are not yet inducted on this machine.</p>
+        {% endif %}
+        {% for quiz in machine.quizes if quiz.hidden == False %}
+            {% if machine.id in inducted_machines %}
+            <a href="{{ url_for('quiz.index', quiz_id=quiz.id) }}" class="button">Retake quiz</a>
+            {% else %}
+            <a href="{{ url_for('quiz.index', quiz_id=quiz.id) }}" class="button">Take quiz</a>
+            {% endif %}
+        {% else %}
+        {% if machine.id not in inducted_machines %}
+        <p>Request an induction on the forum.</p>
+        {% endif %}
+        {% endfor %}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

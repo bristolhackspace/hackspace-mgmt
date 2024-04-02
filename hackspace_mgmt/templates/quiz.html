@@ -3,6 +3,12 @@
 
 {% block title %}Hackspace home{% endblock %}
 
+{% block breadcrumbs %}
+<li><a href="{{ url_for('general.index') }}">Home</a></li>
+<li><a href="{{ url_for('induction.index') }}">Inductions</a></li>
+<li>{{ quiz_title }}</li>
+{% endblock %}
+
 {% block content %}
 <h2>{{ quiz_title }}</h2>
 <p>{{ intro_text }}</p>

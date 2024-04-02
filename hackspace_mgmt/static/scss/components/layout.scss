@@ -33,3 +33,25 @@
         grid-template-columns: 1fr 1fr;
     }
 }
+
+.link-list {
+    list-style: none;
+}
+
+.breadcrumbs {
+    display: inline;
+    list-style: none;
+    margin-bottom: 1.0rem;
+
+    li {
+        display: inline;
+        margin: 0;
+        &::after {
+            content: " : ";
+        }
+
+        &:last-child::after {
+            content: "";
+        }
+    }
+}
