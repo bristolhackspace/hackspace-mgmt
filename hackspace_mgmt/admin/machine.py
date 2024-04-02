@@ -13,4 +13,4 @@ class MachineView(ModelView):
 
 
 def create_views(admin: Admin):
-    admin.add_view(MachineView(Machine, db.session, category="Access Control"))
+    admin.add_view(MachineView(Machine, db.session, endpoint="machine_view", category="Access Control"))
