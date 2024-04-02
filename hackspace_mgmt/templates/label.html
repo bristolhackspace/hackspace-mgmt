@@ -1,0 +1,25 @@
+{% import 'utils.html' as utils with context %}
+{% extends "base.html" %}
+
+{% block title %}Hackspace home{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="{{ url_for('general.index') }}">Home</a></li>
+<li>Storage</li>
+{% endblock %}
+
+{% block content %}
+<h2>Storage</h2>
+<ul class="two-col-boxes">
+    <li>
+        <h3>Short stay</h3>
+        <p>For short term storage of materials. Label expires in 30 days</p>
+        <a href="{{ url_for('label.print', label_type='short_stay') }}" class="button">Print short stay label</a>
+    </li>
+    <li>
+        <h3>Project box</h3>
+        <p>For storage of project related tools and materials. Labels expires in 6 months.</p>
+        <a href="{{ url_for('label.print', label_type='project_box') }}" class="button">Print project box label</a>
+    </li>
+</ul>
+{% endblock %}

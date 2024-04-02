@@ -20,6 +20,11 @@ logger = logging.Logger(__name__)
 @bp.route("/label")
 @login_required
 def index():
+    return render_template("label.html")
+
+@bp.route("/print")
+@login_required
+def print():
     label_type = request.args.get("label_type")
 
     now = date.today()
@@ -44,11 +49,10 @@ def index():
     db.session.commit()
 
     flash(f"Label has been printed. If it hasn't, check the printer is on.")
-    return_url = url_for("general.index", _external=True)
+    return_url = url_for("label.index", _external=True)
     qs = {
         'return_url': return_url,
         'id': label.id
     }
     redir = URL("http://localhost:5000/print") % qs
     return redirect(redir)
-
