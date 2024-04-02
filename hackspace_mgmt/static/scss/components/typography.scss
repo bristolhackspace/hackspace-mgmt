@@ -2,7 +2,7 @@ a {
     color: $accent-colour;
     text-decoration: none;
 
-    :hover {
+    &:hover {
         color: $accent-active;
     }
 }
