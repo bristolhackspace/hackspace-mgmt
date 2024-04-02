@@ -29,6 +29,12 @@ input[type=checkbox], input[type=radio] {
     margin-right: .5rem;
 }
 
+input[readonly]
+{
+    background-color:$disabled-colour;
+    color: $disabled-text;
+}
+
 .button, button, input[type="button"], input[type="reset"], input[type="submit"] {
     background-color: $accent-colour;
     border-color: $accent-colour;
@@ -124,4 +130,12 @@ ul.field {
 
 .field-description {
     margin-bottom: $form-element-spacing;
+}
+
+fieldset {
+    border: solid $border-color;
+    border-width: 0 0 0 1rem;
+    // border-radius: 0.5rem;
+    padding: 0.5rem 0 0.5rem 1rem;
+    margin-bottom: $form-field-spacing;
 }
