@@ -8,4 +8,4 @@ ALTER TABLE IF EXISTS public.machine
     ADD COLUMN legacy_auth public.legacy_machine_auth NOT NULL DEFAULT 'none'::public.legacy_machine_auth;
 
 ALTER TABLE IF EXISTS public.machine
-    ADD COLUMN legacy_password NOT NULL character varying(255);
+    ADD COLUMN legacy_password character varying(255) NOT NULL DEFAULT '';
