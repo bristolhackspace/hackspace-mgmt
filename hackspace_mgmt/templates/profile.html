@@ -1,0 +1,33 @@
+{% import 'utils.html' as utils with context %}
+{% extends "base.html" %}
+
+{% block title %}Hackspace home{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="{{ url_for('general.index') }}">Home</a></li>
+<li>Profile</li>
+{% endblock %}
+
+{% block content %}
+<h2>Profile</h2>
+<p>Here you can view and edit the information we have on record. Some information will require a committee member to change as it has to be manually updated across systems.</p>
+{% call utils.form_tag() %}
+    {{ profile_form.hidden_tag() }}
+    {{ utils.render_field(quiz_form, profile_form.first_name) }}
+    {{ utils.render_field(quiz_form, profile_form.last_name) }}
+    {{ utils.render_field(quiz_form, profile_form.preferred_name) }}
+    {{ utils.render_field(quiz_form, profile_form.email) }}
+    {{ utils.render_field(quiz_form, profile_form.join_date) }}
+
+    <fieldset>
+        {{ utils.render_field(quiz_form, profile_form.address1) }}
+        {{ utils.render_field(quiz_form, profile_form.address2) }}
+        {{ utils.render_field(quiz_form, profile_form.town_city) }}
+        {{ utils.render_field(quiz_form, profile_form.county) }}
+        {{ utils.render_field(quiz_form, profile_form.postcode) }}
+    </fieldset>
+
+    {{ utils.render_form_buttons(profile_form, return_url) }}
+{% endcall %}
+{% endblock %}
+
