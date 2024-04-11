@@ -63,13 +63,11 @@
             </div>
             {% endif %}
             {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class=flashes>
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
+            <ul class="flashes" id="flashes">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
             {% endwith %}
             <ul class="breadcrumbs">
                 {% block breadcrumbs %}{% endblock %}

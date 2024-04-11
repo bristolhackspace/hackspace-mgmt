@@ -22,17 +22,16 @@ input, textarea, select, button, .button {
     }
 }
 
+input[readonly] {
+    background-color:$disabled-colour;
+    color: $disabled-text;
+}
+
 input[type=checkbox], input[type=radio] {
     width: 4rem;
     height: 4rem;
     display: inline-block;
     margin-right: .5rem;
-}
-
-input[readonly]
-{
-    background-color:$disabled-colour;
-    color: $disabled-text;
 }
 
 .button, button, input[type="button"], input[type="reset"], input[type="submit"] {
@@ -57,11 +56,13 @@ input[readonly]
 
     &[disabled] {
         cursor: default;
-        opacity: 0.5;
+        background-color: $disabled-colour;
+        border-color: $disabled-colour;
+        color: $disabled-text;
 
         &:focus, &:hover {
-            background-color: $accent-colour;
-            border-color: $accent-colour;
+            background-color: $disabled-colour;
+            border-color: $disabled-colour;
         }
     }
 
@@ -74,13 +75,17 @@ input[readonly]
         }
 
         &[disabled] {
+            background-color: $disabled-colour;
+            border-color: $disabled-colour;
+            color: $disabled-text;
             &:focus, &:hover {
-                border-color: inherit;
-                color: $accent-colour;
+                background-color: $disabled-colour;
+                border-color: $disabled-colour;
             }
         }
     }
 }
+
 
 .two-column {
     display: grid;

@@ -137,15 +137,15 @@ dl, ol, ul {
               border-color: #d17308;
               outline: 0; }
 
-input[type=checkbox], input[type=radio] {
-  width: 4rem;
-  height: 4rem;
-  display: inline-block;
-  margin-right: 0.5rem; }
+input[readonly] {
+  background-color: #dbdbdb;
+  color: #353535; }
 
-  input[readonly] {
-    background-color: #dbdbdb;
-    color: #353535; }
+  input[type=checkbox], input[type=radio] {
+    width: 4rem;
+    height: 4rem;
+    display: inline-block;
+    margin-right: 0.5rem; }
 
     .button, button, input[type="button"], input[type="reset"], input[type="submit"] {
       background-color: #d17308;
@@ -169,14 +169,16 @@ input[type=checkbox], input[type=radio] {
         .button[disabled], button[disabled], input[type="button"][disabled],
         input[type="reset"][disabled], input[type="submit"][disabled] {
           cursor: default;
-          opacity: 0.5; }
+          background-color: #dbdbdb;
+          border-color: #dbdbdb;
+          color: #353535; }
           .button[disabled]:focus, .button[disabled]:hover, button[disabled]:focus,
           button[disabled]:hover, input[type="button"][disabled]:focus,
           input[type="button"][disabled]:hover, input[type="reset"][disabled]:focus,
           input[type="reset"][disabled]:hover, input[type="submit"][disabled]:focus,
           input[type="submit"][disabled]:hover {
-            background-color: #d17308;
-            border-color: #d17308; }
+            background-color: #dbdbdb;
+            border-color: #dbdbdb; }
       .button.button-outline, button.button-outline, input[type="button"].button-outline,
       input[type="reset"].button-outline, input[type="submit"].button-outline {
         background-color: transparent;
@@ -189,16 +191,23 @@ input[type=checkbox], input[type=radio] {
         input[type="submit"].button-outline:focus,
         input[type="submit"].button-outline:hover {
           color: #4e4a46; }
-          .button.button-outline[disabled]:focus, .button.button-outline[disabled]:hover,
-          button.button-outline[disabled]:focus, button.button-outline[disabled]:hover,
-          input[type="button"].button-outline[disabled]:focus,
-          input[type="button"].button-outline[disabled]:hover,
-          input[type="reset"].button-outline[disabled]:focus,
-          input[type="reset"].button-outline[disabled]:hover,
-          input[type="submit"].button-outline[disabled]:focus,
-          input[type="submit"].button-outline[disabled]:hover {
-            border-color: inherit;
-            color: #d17308; }
+          .button.button-outline[disabled], button.button-outline[disabled],
+          input[type="button"].button-outline[disabled],
+          input[type="reset"].button-outline[disabled],
+          input[type="submit"].button-outline[disabled] {
+            background-color: #dbdbdb;
+            border-color: #dbdbdb;
+            color: #353535; }
+            .button.button-outline[disabled]:focus, .button.button-outline[disabled]:hover,
+            button.button-outline[disabled]:focus, button.button-outline[disabled]:hover,
+            input[type="button"].button-outline[disabled]:focus,
+            input[type="button"].button-outline[disabled]:hover,
+            input[type="reset"].button-outline[disabled]:focus,
+            input[type="reset"].button-outline[disabled]:hover,
+            input[type="submit"].button-outline[disabled]:focus,
+            input[type="submit"].button-outline[disabled]:hover {
+              background-color: #dbdbdb;
+              border-color: #dbdbdb; }
 
 .two-column {
   display: grid;
@@ -288,6 +297,8 @@ input[type=checkbox], input[type=radio] {
         border-radius: 0.5rem;
         border: 0.1rem solid #d1d1d1;
         padding: 0.5rem; }
+        .flashes li.error {
+          background-color: #fad3d3; }
 
 .login-status {
   border: 0.1rem solid #b4b4b4;
