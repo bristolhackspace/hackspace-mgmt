@@ -22,9 +22,9 @@ logger = logging.Logger(__name__)
 def index():
     return render_template("label.html")
 
-@bp.route("/print")
+@bp.route("/create")
 @login_required
-def print():
+def create():
     label_type = request.args.get("label_type")
 
     now = date.today()
@@ -36,8 +36,7 @@ def print():
         expiry = now + timedelta(days=30*6)
         caption = "Project box"
     else:
-        flash("Unknown label type")
-        return redirect(url_for("general.index"))
+        return {"error": "unknown label type"}, 400
     
     label = Label(
         member_id = g.member.id,
@@ -48,11 +47,12 @@ def print():
     db.session.add(label)
     db.session.commit()
 
-    flash(f"Label has been printed. If it hasn't, check the printer is on.")
-    return_url = url_for("label.index", _external=True)
-    qs = {
-        'return_url': return_url,
-        'id': label.id
+    return {
+        "status": "success",
+        "label": {
+            "id": label.id,
+            "name": str(g.member),
+            "expiry": label.expiry.strftime("%d %b %Y"),
+            "caption": label.caption
+        }
     }
-    redir = URL("http://localhost:5000/print") % qs
-    return redirect(redir)

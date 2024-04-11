@@ -3,6 +3,55 @@
 
 {% block title %}Hackspace home{% endblock %}
 
+{% block head %}
+{{ super() }}
+<script>
+    async function print_label(label_btn) {
+        let print_buttons = document.getElementsByClassName("print-button");
+        for (let i = 0; i < print_buttons.length; i++) {
+            print_buttons[i].setAttribute("disabled", "");
+        }
+
+        old_text = label_btn.innerHTML;
+        label_btn.innerHTML = "Printing...";
+
+        label_type = label_btn.id
+        try {
+            let response = await fetch(`{{ url_for('label.create') }}?label_type=${label_type}`);
+            let result = await response.json();
+        
+            response = await fetch("http://localhost:5000/print", {
+                method: "POST",
+                body: JSON.stringify(result["label"]),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+            console.log(response);
+            result = await response.json();
+            console.log(result);
+            if ("error" in result) {
+                let flash = document.createElement("li");
+                flash.classList.add("error");
+                flash.innerText = "Error printing: " + result["error"];
+                document.getElementById("flashes").appendChild(flash);
+            }
+        } catch (e) {
+            let flash = document.createElement("li");
+            flash.classList.add("error");
+            flash.innerText = "Error printing: " + e.message;
+            document.getElementById("flashes").appendChild(flash);
+            console.log(e.message);
+        } finally {
+            for (let i = 0; i < print_buttons.length; i++) {
+                print_buttons[i].removeAttribute("disabled");
+            }
+            label_btn.innerHTML = old_text;
+        }
+    }
+</script>
+{% endblock %}
+
 {% block breadcrumbs %}
 <li><a href="{{ url_for('general.index') }}">Home</a></li>
 <li>Storage</li>
@@ -14,12 +63,13 @@
     <li>
         <h3>Short stay</h3>
         <p>For short term storage of materials. Label expires in 30 days</p>
-        <a href="{{ url_for('label.print', label_type='short_stay') }}" class="button">Print short stay label</a>
+        <button onclick="print_label(this)" id="short_stay" class="print-button">Print short stay label</button>
     </li>
     <li>
         <h3>Project box</h3>
         <p>For storage of project related tools and materials. Labels expires in 6 months.</p>
-        <a href="{{ url_for('label.print', label_type='project_box') }}" class="button">Print project box label</a>
+        <button onclick="print_label(this)" id="project_box" class="print-button">Print project box label</button>
     </li>
 </ul>
+
 {% endblock %}
