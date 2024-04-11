@@ -1,1 +1,1 @@
-ALTER TABLE machine ADD COLUMN hide_from_home boolean NOT NULL DEFAULT false;
+ALTER TABLE public.machine ADD COLUMN hide_from_home boolean NOT NULL DEFAULT false;
