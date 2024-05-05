@@ -6,7 +6,6 @@
             "type": "debugpy",
             "request": "launch",
             "module": "flask",
-            "preLaunchTask": "Migrate",
             "env": {
                 "FLASK_APP": "hackspace_mgmt/__init__.py",
                 "FLASK_DEBUG": "1"

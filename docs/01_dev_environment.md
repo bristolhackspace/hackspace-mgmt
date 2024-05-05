@@ -11,7 +11,7 @@ The repository has a dev container configured which you can use if you wish. Thi
 3. Clone and open the repository. Vscode will nudge you to open it in a dev container.
 4. Click "Run" in the debug pane. 
 
-Note: Both the dev container and postgres can be deleted and rebuilt as needed without losing your DB. They will automatically re-attach themselves to the `hackspace-mgmt_devcontainer_postgres-data` volume which is the important one not to lose as it contains the database itself. 
+Both the dev container and postgres can be deleted and rebuilt as needed without losing your DB. On recreate, they will automatically re-attach themselves to the `hackspace-mgmt_devcontainer_postgres-data` volume. This contains the data itself, so it's the important one to keep safe.
 
 ### Without the Dev Container
 
@@ -38,10 +38,9 @@ Navigate to `http://127.0.0.1:5000/admin/` and you should be able to see a bare 
 
 ### Database Setup
 
-The database is nominally configured by running each of the SQL scripts inside the `migration` folder sequentially. Anytime a new one is added, this will need to be applied before the app is started.
+The database schema is managed by the `Flask-Migrate` package, which will automatically create the database and update the schema for you on app startup. 
 
-If you're using a dev container, the `migrate.sh` script will be run prior to any debug session which does this automagically! 
+However, `./sample_dataset.sql` contains a pg_dump which can be useful for development environments as it contains a realistic set of data to test with. 
 
-Tooling-wise, you may wish to use `psql` - a CLI for interacting with the datbase directly. The dev container comes with it installed, but because it is running in a container, you need to use `psql -h localhost -U postgres (-d hackspace) etc` to connect.
-
-Separately, you may find it helpful to install `pgAdmin`. This is a free GUI tool for exploring Postgres, similar to SSMS. 
+1. Create a fresh database using `psql -h localhost -U postgres -c "CREATE DATABASE hackspace"`.
+2. Apply the dump using `psql -h localhost -U postgres hackspace < sample_dataset.sql`.

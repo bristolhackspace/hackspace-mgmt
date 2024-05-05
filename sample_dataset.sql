@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.2
--- Dumped by pg_dump version 16.2
+-- Dumped from database version 15.6 (Debian 15.6-1.pgdg120+2)
+-- Dumped by pg_dump version 15.6 (Debian 15.6-0+deb12u1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -60,6 +60,17 @@ ALTER TYPE public.legacy_machine_auth OWNER TO postgres;
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
+
+--
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.alembic_version (
+    version_num character varying(32) NOT NULL
+);
+
+
+ALTER TABLE public.alembic_version OWNER TO postgres;
 
 --
 -- Name: card; Type: TABLE; Schema: public; Owner: postgres
@@ -290,6 +301,15 @@ ALTER TABLE public.quiz ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
+-- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.alembic_version (version_num) FROM stdin;
+0f17df0ee1a8
+\.
+
+
+--
 -- Data for Name: card; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -410,6 +430,14 @@ SELECT pg_catalog.setval('public.member_data_id_seq', 7, true);
 --
 
 SELECT pg_catalog.setval('public.quiz_id_seq', 1, true);
+
+
+--
+-- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.alembic_version
+    ADD CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num);
 
 
 --
