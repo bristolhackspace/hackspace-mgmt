@@ -8,9 +8,10 @@ from typing import Optional, List
 from datetime import date
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
-
+migrate = Migrate()
 
 class InductionState(enum.Enum):
     valid = "valid"

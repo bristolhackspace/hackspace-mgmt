@@ -28,8 +28,10 @@ def create_app(test_config=None):
     scss = Bundle('scss/main.scss', filters='pyscss', depends=('scss/**/*.scss'), output='css/all.css')
     assets.register('css_all', scss)
 
-    from .models import db
+    from .models import db, migrate
+
     db.init_app(app)
+    migrate.init_app(app, db)
 
     from . import general
     general.init_app(app)
