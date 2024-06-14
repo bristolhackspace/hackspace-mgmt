@@ -9,7 +9,7 @@ import logging
 import re
 from datetime import date
 
-from hackspace_mgmt.models import db, Quiz, Member, Induction, InductionState
+from hackspace_mgmt.models import db, Quiz, Member, Induction, InductionState, LegacyMachineAuth
 from hackspace_mgmt.general.helpers import login_required
 
 bp = Blueprint("quiz", __name__)
@@ -131,7 +131,14 @@ def index(quiz_id):
         )
         db.session.execute(upsert_stmt)
         db.session.commit()
-        flash(f"All correct! You should now be able to use the {quiz.machine.name}.")
+        correct_msg = f"All correct! "
+        if quiz.machine.legacy_auth == LegacyMachineAuth.padlock:
+            correct_msg += f"The padlock code for the {quiz.machine.name} is {quiz.machine.legacy_password}."
+        elif quiz.machine.legacy_auth == LegacyMachineAuth.password:
+            correct_msg += f"The password for the {quiz.machine.name} is \"{quiz.machine.legacy_password}\"."
+        else:
+            correct_msg += f"You should now be able to use the {quiz.machine.name}."
+        flash(correct_msg)
         return redirect(url_for("general.index"))
 
     intro_text = md_parse(quiz.intro)
