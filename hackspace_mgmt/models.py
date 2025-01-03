@@ -158,3 +158,14 @@ class Quiz(db.Model):
     hidden: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     machine: Mapped[Optional["Machine"]] = relationship()
+
+class QuizCompletion(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    quiz_id: Mapped[int] = mapped_column(ForeignKey("quiz.id"))
+    member_id: Mapped[int] = mapped_column(ForeignKey("member.id"))
+    completed_on: Mapped[date] = mapped_column(default=date.today)
+
+class MachineQuiz(db.Model):
+    machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"), primary_key=True)
+    quiz_id: Mapped[int] = mapped_column(ForeignKey("quiz.id"), primary_key=True)
+
