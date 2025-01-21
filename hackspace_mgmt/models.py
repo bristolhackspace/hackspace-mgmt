@@ -188,6 +188,9 @@ class Quiz(db.Model):
 
     machine: Mapped[Optional["Machine"]] = relationship()
 
+    def __str__(self):
+        return self.title
+
 class QuizCompletion(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     quiz_id: Mapped[int] = mapped_column(ForeignKey("quiz.id"))
