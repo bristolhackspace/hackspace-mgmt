@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 
 from hackspace_mgmt.models import Machine, QuizCompletion, db, Quiz, Member, Induction, InductionState, LegacyMachineAuth
 from hackspace_mgmt.general.helpers import login_required
+from hackspace_mgmt.audit import create_audit_log
 
 bp = Blueprint("quiz", __name__)
 
@@ -122,8 +123,9 @@ def index(quiz_id):
 
     quiz_form = QuizForm(request.form, quiz_data=quiz_data)
 
+    now=datetime.now(timezone.utc)
+
     if quiz_form.validate_on_submit():
-        now=datetime.now(timezone.utc)
         upsert_stmt = insert(QuizCompletion).values(
             member_id=g.member.id,
             quiz_id=quiz.id,
@@ -135,7 +137,20 @@ def index(quiz_id):
             ),
         )
         db.session.execute(upsert_stmt)
+
+        create_audit_log(
+            "quiz",
+            "pass",
+            data={
+                "questions": quiz_data,
+                "quiz_id": quiz.id
+            },
+            member=g.member,
+            logged_at=now,
+            commit=False
+        )
         db.session.commit()
+
         correct_msg = f"All correct! "
 
         machine = None
@@ -153,9 +168,18 @@ def index(quiz_id):
                 correct_msg += "You'll need to complete further training first however."
         flash(correct_msg)
         return redirect(return_url)
+    elif request.method == "POST":
+        create_audit_log(
+            "quiz",
+            "fail",
+            data={
+                "questions": quiz_data,
+                "quiz_id": quiz.id
+            },
+            member=g.member,
+            logged_at=now
+        )
 
     intro_text = md_parse(quiz.intro)
-
-
 
     return render_template("quiz.html", intro_text=intro_text, quiz_form=quiz_form, quiz_title=quiz.title, return_url=return_url)

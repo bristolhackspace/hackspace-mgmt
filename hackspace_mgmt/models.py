@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import String, ForeignKey, Enum, UniqueConstraint, types
+from sqlalchemy import JSON, String, ForeignKey, Enum, UniqueConstraint, types, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.functions import coalesce, concat
@@ -204,3 +204,11 @@ class MachineQuiz(db.Model):
     machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"), primary_key=True)
     quiz_id: Mapped[int] = mapped_column(ForeignKey("quiz.id"), primary_key=True)
 
+
+class AuditLog(db.Model):
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    logged_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    category: Mapped[str] = mapped_column(String(32))
+    event: Mapped[str] = mapped_column(String(32))
+    member_id: Mapped[int] = mapped_column(ForeignKey("member.id"))
+    data: Mapped[Optional[JSON]] = mapped_column(type_=JSON)
