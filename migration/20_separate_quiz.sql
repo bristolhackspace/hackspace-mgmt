@@ -37,3 +37,6 @@ CREATE TABLE public.machine_quiz
 );
 
 INSERT INTO machine_quiz(machine_id, quiz_id) SELECT machine_id, id FROM quiz WHERE machine_id is not NULL;
+
+ALTER TABLE IF EXISTS public.quiz_completion
+    ADD UNIQUE (quiz_id, member_id);

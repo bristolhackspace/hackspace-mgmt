@@ -15,7 +15,7 @@
     {% for machine in machines %}
     <li>
         <h3>{{ machine.name }}</h3>
-        {% if machine.id in inducted_machines %}
+        {% if machine.is_member_inducted(g.member) %}
         {% if machine.legacy_auth == LegacyMachineAuth.password %}
         <p>You are inducted. The password is "{{ machine.legacy_password }}".</p>
         {% elif machine.legacy_auth == LegacyMachineAuth.padlock %}
@@ -26,17 +26,7 @@
         {% else %}
         <p>You are not yet inducted on this machine.</p>
         {% endif %}
-        {% for quiz in machine.quizes if quiz.hidden == False %}
-            {% if machine.id in inducted_machines %}
-            <a href="{{ url_for('quiz.index', quiz_id=quiz.id) }}" class="button">Retake quiz</a>
-            {% else %}
-            <a href="{{ url_for('quiz.index', quiz_id=quiz.id) }}" class="button">Take quiz</a>
-            {% endif %}
-        {% else %}
-        {% if machine.id not in inducted_machines %}
-        <p>Request an induction on the forum.</p>
-        {% endif %}
-        {% endfor %}
+        <a href="{{ url_for('induction.machine', machine_id=machine.id) }}" class="button">View/take inductions</a>
     </li>
     {% endfor %}
 </ul>

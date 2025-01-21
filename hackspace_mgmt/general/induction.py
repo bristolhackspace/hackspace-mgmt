@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, g
 import logging
 
-from hackspace_mgmt.models import db, Machine, Induction, InductionState, LegacyMachineAuth
+from hackspace_mgmt.models import db, Machine, Induction, InductionState, LegacyMachineAuth, Member
 from hackspace_mgmt.general.helpers import login_required
 
 bp = Blueprint("induction", __name__)
@@ -14,9 +14,15 @@ def index():
     machine_select = db.select(Machine).where(Machine.hide_from_home == False).order_by(Machine.name)
     machines = db.session.scalars(machine_select).all()
 
-    query = db.select(Machine.id).where(Machine.inductions.any(
-        Induction.member_id==g.member.id and Induction.state == InductionState.valid
-    ))
-    inducted_machines = set(row.id for row in db.session.execute(query))
+    return render_template("induction.html", machines=machines, LegacyMachineAuth=LegacyMachineAuth)
 
-    return render_template("induction.html", machines=machines, inducted_machines=inducted_machines, LegacyMachineAuth=LegacyMachineAuth)
+@bp.route("/induction/<int:machine_id>")
+@login_required
+def machine(machine_id):
+    machine = db.get_or_404(Machine, machine_id)
+
+    member: Member = g.member
+
+    completed_quizes = set(completion.quiz for completion in member.quiz_completions)
+
+    return render_template("machine_induction.html", machine=machine, completed_quizes=completed_quizes, LegacyMachineAuth=LegacyMachineAuth)

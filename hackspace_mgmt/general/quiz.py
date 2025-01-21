@@ -7,9 +7,9 @@ from sqlalchemy.dialects.postgresql import insert
 import yaml
 import logging
 import re
-from datetime import date
+from datetime import datetime, timezone
 
-from hackspace_mgmt.models import db, Quiz, Member, Induction, InductionState, LegacyMachineAuth
+from hackspace_mgmt.models import Machine, QuizCompletion, db, Quiz, Member, Induction, InductionState, LegacyMachineAuth
 from hackspace_mgmt.general.helpers import login_required
 
 bp = Blueprint("quiz", __name__)
@@ -83,6 +83,13 @@ def md_parse(text: str):
 @bp.route("/quiz/<int:quiz_id>", methods=("GET", "POST"))
 @login_required
 def index(quiz_id):
+
+    machine_id = request.args.get("machine_id")
+    if machine_id is not None:
+        return_url = url_for("induction.machine", machine_id=machine_id)
+    else:
+        return_url = url_for("general.index")
+
     quiz = db.get_or_404(Quiz, quiz_id)
 
     quiz_data = yaml.load(quiz.questions, Loader=yaml.CLoader)
@@ -116,31 +123,39 @@ def index(quiz_id):
     quiz_form = QuizForm(request.form, quiz_data=quiz_data)
 
     if quiz_form.validate_on_submit():
-        today=date.today()
-        upsert_stmt = insert(Induction).values(
+        now=datetime.now(timezone.utc)
+        upsert_stmt = insert(QuizCompletion).values(
             member_id=g.member.id,
-            machine_id=quiz.machine_id,
-            state=InductionState.valid,
-            inducted_on=today
+            quiz_id=quiz.id,
+            completed_on=now
         ).on_conflict_do_update(
-            index_elements=[Induction.member_id, Induction.machine_id],
+            index_elements=[QuizCompletion.quiz_id, QuizCompletion.member_id],
             set_=dict(
-                state=InductionState.valid,
-                inducted_on=today
+                completed_on=now
             ),
         )
         db.session.execute(upsert_stmt)
         db.session.commit()
         correct_msg = f"All correct! "
-        if quiz.machine.legacy_auth == LegacyMachineAuth.padlock:
-            correct_msg += f"The padlock code for the {quiz.machine.name} is {quiz.machine.legacy_password}."
-        elif quiz.machine.legacy_auth == LegacyMachineAuth.password:
-            correct_msg += f"The password for the {quiz.machine.name} is \"{quiz.machine.legacy_password}\"."
-        else:
-            correct_msg += f"You should now be able to use the {quiz.machine.name}."
+
+        machine = None
+        if machine_id is not None:
+            machine = db.session.get(Machine, machine_id)
+        if machine:
+            if machine.is_member_inducted(g.member):
+                if machine.legacy_auth == LegacyMachineAuth.padlock:
+                    correct_msg += f"The padlock code for the {machine.name} is {machine.legacy_password}."
+                elif machine.legacy_auth == LegacyMachineAuth.password:
+                    correct_msg += f"The password for the {machine.name} is \"{machine.legacy_password}\"."
+                else:
+                    correct_msg += f"You should now be able to use the {machine.name}."
+            else:
+                correct_msg += "You'll need to complete further training first however."
         flash(correct_msg)
-        return redirect(url_for("general.index"))
+        return redirect(return_url)
 
     intro_text = md_parse(quiz.intro)
 
-    return render_template("quiz.html", intro_text=intro_text, quiz_form=quiz_form, quiz_title=quiz.title, return_url=url_for("general.index"))
+
+
+    return render_template("quiz.html", intro_text=intro_text, quiz_form=quiz_form, quiz_title=quiz.title, return_url=return_url)

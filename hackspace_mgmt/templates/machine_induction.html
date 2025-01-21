@@ -1,0 +1,42 @@
+{% import 'utils.html' as utils with context %}
+{% extends "base.html" %}
+
+{% block title %}Hackspace home{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="{{ url_for('general.index') }}">Home</a></li>
+<li><a href="{{ url_for('induction.index') }}">Inductions</a></li>
+<li>{{ machine.name }} induction</li>
+{% endblock %}
+
+{% block content %}
+<h2>{{ machine.name }} induction</h2>
+
+{% if machine.is_member_inducted(g.member) %}
+{% if machine.legacy_auth == LegacyMachineAuth.password %}
+<p>You are inducted. The password is "{{ machine.legacy_password }}".</p>
+{% elif machine.legacy_auth == LegacyMachineAuth.padlock %}
+<p>You are inducted. The padlock code is {{ machine.legacy_password }}.</p>
+{% else %}
+<p>You are inducted on this machine.</p>
+{% endif %}
+{% else %}
+<p>You are not yet inducted on this machine.</p>
+{% endif %}
+
+
+{% if machine.quizzes %}
+<p>The quizzes below are required to be able to use this machine.</p>
+{% endif %}
+
+{% for quiz in machine.quizzes %}
+<h3>{{ quiz.title }}</h3>
+<p>{{ quiz.description }}</p>
+{% if quiz in completed_quizes %}
+<p><a href="{{ url_for('quiz.index', quiz_id=quiz.id, machine_id=machine.id) }}" class="button">Retake quiz</a></p>
+{% else %}
+<p><a href="{{ url_for('quiz.index', quiz_id=quiz.id, machine_id=machine.id) }}" class="button">Take quiz</a></p>
+{% endif %}
+{% endfor %}
+
+{% endblock %}

@@ -1,15 +1,36 @@
 import enum
-from sqlalchemy import String, ForeignKey, Enum, UniqueConstraint
+from sqlalchemy import String, ForeignKey, Enum, UniqueConstraint, types
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.functions import coalesce, concat
 from sqlalchemy import cast
 from typing import Optional, List
-from datetime import date
+from datetime import date, datetime, timezone
 
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
+
+class UTCDateTime(types.TypeDecorator):
+
+    impl = types.DateTime
+    cache_ok = True
+
+    def process_bind_param(self, value, engine):
+        if value is None:
+            return
+        if value.utcoffset() is None:
+            raise ValueError(
+                'Got naive datetime while timezone-aware is expected'
+            )
+        return value.astimezone(timezone.utc).replace(
+            tzinfo=None
+        )
+
+    def process_result_value(self, value, engine):
+        if value is not None:
+            return value.replace(tzinfo=timezone.utc)
 
 
 class InductionState(enum.Enum):
@@ -68,6 +89,8 @@ class Member(db.Model):
     inductions: Mapped[List["Induction"]] = relationship(back_populates="member", foreign_keys="Induction.member_id")
     labels: Mapped[List["Label"]] = relationship(back_populates="member")
 
+    quiz_completions: Mapped[List["QuizCompletion"]] = relationship(back_populates="member")
+
     @hybrid_property
     def display_name(self):
         if self.preferred_name:
@@ -105,7 +128,13 @@ class Machine(db.Model):
     hide_from_home: Mapped[bool] = mapped_column(nullable=False, default=False)
     controllers: Mapped[List["MachineController"]] = relationship(back_populates="machine")
     inductions: Mapped[List["Induction"]] = relationship(back_populates="machine")
-    quizes: Mapped[List["Quiz"]] = relationship(back_populates="machine")
+    quizzes: Mapped[List["Quiz"]] = relationship(secondary="machine_quiz")
+
+    def is_member_inducted(self, member: Member):
+        member_quizzes = set(completion.quiz for completion in member.quiz_completions)
+        machine_quizzes = set(self.quizzes)
+
+        return member_quizzes >= machine_quizzes
 
     def __str__(self):
         return self.name
@@ -163,7 +192,13 @@ class QuizCompletion(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     quiz_id: Mapped[int] = mapped_column(ForeignKey("quiz.id"))
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"))
-    completed_on: Mapped[date] = mapped_column(default=date.today)
+    completed_on: Mapped[datetime] = mapped_column(UTCDateTime)
+
+    __table_args__ = (UniqueConstraint("quiz_id", "member_id"),)
+
+    quiz: Mapped["Quiz"] = relationship()
+    member: Mapped["Member"] = relationship()
+
 
 class MachineQuiz(db.Model):
     machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"), primary_key=True)
