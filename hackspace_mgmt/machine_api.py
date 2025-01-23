@@ -2,15 +2,17 @@
 from flask import (
     Blueprint, abort, request, url_for, send_file, current_app
 )
-from .models import db, Member, Card, Machine, MachineController, Induction, InductionState
+
+from hackspace_mgmt.audit import create_audit_log
+from .models import db, Member, Card, Machine, MachineController, Induction
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.dialects.postgresql import insert
-from datetime import date
+from datetime import datetime, timezone
 import logging
 
 bp = Blueprint('machine_api', __name__, url_prefix='/api/machines')
 
-def controller_from_hostname(hostname, join_machine=True):
+def controller_from_hostname(hostname, join_machine=True) -> MachineController:
     machine_controller_query = db.select(MachineController).where(MachineController.hostname==hostname)
     if join_machine:
         machine_controller_query = machine_controller_query.join(MachineController.machine)
@@ -42,19 +44,41 @@ def unlock(hostname):
     current_app.logger.debug(f"Member is {member}")
     current_app.logger.debug(f"Machine ID is {controller.machine.id}")
 
-    try:
-        induction = db.session.execute(
-            db.select(Induction)
-                .where(Induction.member_id==member.id)
-                .where(Induction.machine_id==controller.machine.id)
-                .where(Induction.state==InductionState.valid)
-        ).scalar_one()
-        current_app.logger.debug(f"Inductions: {induction}")
-
-        current_app.logger.info(f"'{member}' ({member.id}) successfully unlocked {controller.machine.name} ({hostname})")
-    except NoResultFound:
+    if not controller.machine.is_member_inducted(member):
+        create_audit_log(
+            "access_control",
+            "unlock_denied",
+            data = {
+                "controller": {
+                    "id": controller.id,
+                    "hostname": controller.hostname
+                },
+                "machine": {
+                    "id": controller.machine.id,
+                    "name": controller.machine.name
+                },
+            },
+            member=member
+        )
         current_app.logger.info(f"'{member}' ({member.id}) unauthorized unlock attempt for {controller.machine.name} ({hostname})")
         abort(403)
+    else:
+        create_audit_log(
+            "access_control",
+            "unlock_success",
+            data = {
+                "controller": {
+                    "id": controller.id,
+                    "hostname": controller.hostname
+                },
+                "machine": {
+                    "id": controller.machine.id,
+                    "name": controller.machine.name
+                },
+            },
+            member=member
+        )
+        current_app.logger.info(f"'{member}' ({member.id}) successfully unlocked {controller.machine.name} ({hostname})")
 
     return {"unlocked": True}
 
@@ -78,19 +102,6 @@ def enroll(hostname):
     current_app.logger.debug(f"Inductor is {inductor}")
     current_app.logger.debug(f"Machine ID is {controller.machine.id}")
 
-    try:
-        induction = db.session.execute(
-            db.select(Induction)
-                .where(Induction.member_id==inductor.id)
-                .where(Induction.machine_id==controller.machine.id)
-                .where(Induction.state==InductionState.valid)
-                .where(Induction.can_induct==True)
-        ).scalar_one()
-
-        current_app.logger.info(f"'{inductor}' ({inductor.id}) authorised to induct for {controller.machine.name} ({hostname})")
-    except NoResultFound:
-        current_app.logger.info(f"'{inductor}' ({inductor.id}) unauthorized to induct for {controller.machine.name} ({hostname})")
-        abort(403)
 
     inductee_card_str = request.args.get("inductee_id")
     if inductee_card_str is None:
@@ -99,25 +110,70 @@ def enroll(hostname):
     inductee_card = format_card_serial(inductee_card_str)
     card_subq = db.select(Card).where(Card.card_serial==inductee_card).subquery()
     member_query = db.select(Member).join(card_subq, Member.id==card_subq.c.member_id)
-    inductee = db.one_or_404(member_query)
+    inductee = db.session.execute(member_query).scalar_one()
 
 
-    today=date.today()
+    if not controller.machine.is_member_inducted(inductor, check_can_induct=True):
+        create_audit_log(
+            "access_control",
+            "enroll_denied",
+            data = {
+                "controller": {
+                    "id": controller.id,
+                    "hostname": controller.hostname
+                },
+                "machine": {
+                    "id": controller.machine.id,
+                    "name": controller.machine.name
+                },
+                "inductee": inductee.id if inductee else None
+            },
+            member=inductor
+        )
+        current_app.logger.info(f"'{inductor}' ({inductor.id}) unauthorized to induct for {controller.machine.name} ({hostname})")
+        abort(403)
+    else:
+        current_app.logger.info(f"'{inductor}' ({inductor.id}) authorised to induct for {controller.machine.name} ({hostname})")
+
+
+    if not inductee:
+        abort(404)
+
+
+    now=datetime.now(timezone.utc)
     upsert_stmt = insert(Induction).values(
         member_id=inductee.id,
         machine_id=controller.machine.id,
-        state=InductionState.valid,
         inducted_by=inductor.id,
-        inducted_on=today
+        inducted_on=now
     ).on_conflict_do_update(
         index_elements=[Induction.member_id, Induction.machine_id],
         set_=dict(
-            state=InductionState.valid,
             inducted_by=inductor.id,
-            inducted_on=today
+            inducted_on=now
         ),
     )
     db.session.execute(upsert_stmt)
+
+    create_audit_log(
+        "access_control",
+        "enroll_success",
+        data = {
+            "controller": {
+                "id": controller.id,
+                "hostname": controller.hostname
+            },
+            "machine": {
+                "id": controller.machine.id,
+                "name": controller.machine.name
+            },
+            "inductee": inductee.id
+        },
+        logged_at=now,
+        member=inductor,
+        commit=False
+    )
+
     db.session.commit()
 
     return {}

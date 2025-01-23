@@ -2,10 +2,11 @@ import enum
 from sqlalchemy import JSON, String, ForeignKey, Enum, UniqueConstraint, types, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.sql import expression
 from sqlalchemy.sql.functions import coalesce, concat
 from sqlalchemy import cast
 from typing import Optional, List
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -32,14 +33,6 @@ class UTCDateTime(types.TypeDecorator):
         if value is not None:
             return value.replace(tzinfo=timezone.utc)
 
-
-class InductionState(enum.Enum):
-    valid = "valid"
-    expired =  "expired"
-    banned =  "banned"
-
-    def __str__(self):
-        return f'{self.name}'
 
 class DiscourseInvite(enum.Enum):
     no = "no"
@@ -126,15 +119,30 @@ class Machine(db.Model):
     legacy_auth: Mapped[LegacyMachineAuth] = mapped_column(Enum(LegacyMachineAuth, name="legacy_auth"), nullable=False, default=LegacyMachineAuth.none)
     legacy_password: Mapped[str] = mapped_column(String(255), nullable=False, default="")
     hide_from_home: Mapped[bool] = mapped_column(nullable=False, default=False)
+    requires_in_person: Mapped[bool] = mapped_column(server_default=expression.false())
+    induction_valid_for_days: Mapped[int] = mapped_column(server_default="0")
+
     controllers: Mapped[List["MachineController"]] = relationship(back_populates="machine")
     inductions: Mapped[List["Induction"]] = relationship(back_populates="machine")
     quizzes: Mapped[List["Quiz"]] = relationship(secondary="machine_quiz")
 
-    def is_member_inducted(self, member: Member):
-        member_quizzes = set(completion.quiz for completion in member.quiz_completions)
+    def is_member_inducted(self, member: Member, check_can_induct=False):
+        member_quizzes = set(completion.quiz for completion in member.quiz_completions if not completion.has_expired())
         machine_quizzes = set(self.quizzes)
 
-        return member_quizzes >= machine_quizzes
+        in_person_satisfied = False
+        if self.requires_in_person:
+            for induction in member.inductions:
+                if induction.machine == self:
+                    if induction.has_expired():
+                        break
+                    if not check_can_induct or induction.can_induct:
+                        in_person_satisfied = True
+                    break
+        else:
+            in_person_satisfied = True
+
+        return member_quizzes >= machine_quizzes and in_person_satisfied
 
     def __str__(self):
         return self.name
@@ -157,9 +165,8 @@ class Induction(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"))
     machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"))
-    state: Mapped[InductionState] = mapped_column(Enum(InductionState, name="induction_state"), nullable=False, default=InductionState.valid)
     inducted_by: Mapped[Optional[int]] = mapped_column(ForeignKey("member.id"))
-    inducted_on: Mapped[date] = mapped_column(nullable=False, default=date.today)
+    inducted_on: Mapped[Optional[datetime]] = mapped_column(UTCDateTime)
     can_induct: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     member: Mapped["Member"] = relationship(back_populates="inductions", foreign_keys=[member_id])
@@ -167,6 +174,13 @@ class Induction(db.Model):
     machine: Mapped["Machine"] = relationship(back_populates="inductions")
 
     __table_args__ = (UniqueConstraint("member_id", "machine_id"),)
+
+    def has_expired(self):
+        valid_days = self.machine.induction_valid_for_days
+        if valid_days <= 0:
+            return False
+        return self.inducted_on < datetime.now(timezone.utc) + timedelta(days=valid_days)
+
 
 class Label(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -185,6 +199,7 @@ class Quiz(db.Model):
     machine_id: Mapped[Optional[int]] = mapped_column(ForeignKey("machine.id"))
     intro: Mapped[str] = mapped_column(String(), nullable=False, default="")
     hidden: Mapped[bool] = mapped_column(nullable=False, default=False)
+    valid_for_days: Mapped[int] = mapped_column(server_default="0")
 
     machine: Mapped[Optional["Machine"]] = relationship()
 
@@ -201,6 +216,12 @@ class QuizCompletion(db.Model):
 
     quiz: Mapped["Quiz"] = relationship()
     member: Mapped["Member"] = relationship()
+
+    def has_expired(self):
+        valid_days = self.quiz.valid_for_days
+        if valid_days <= 0:
+            return False
+        return self.completed_on < datetime.now(timezone.utc) + timedelta(days=valid_days)
 
 
 class MachineQuiz(db.Model):

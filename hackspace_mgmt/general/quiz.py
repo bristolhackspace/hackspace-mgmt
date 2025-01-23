@@ -9,7 +9,7 @@ import logging
 import re
 from datetime import datetime, timezone
 
-from hackspace_mgmt.models import Machine, QuizCompletion, db, Quiz, Member, Induction, InductionState, LegacyMachineAuth
+from hackspace_mgmt.models import Machine, QuizCompletion, db, Quiz, Member, Induction, LegacyMachineAuth
 from hackspace_mgmt.general.helpers import login_required
 from hackspace_mgmt.audit import create_audit_log
 

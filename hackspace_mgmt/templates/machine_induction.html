@@ -25,15 +25,39 @@
 {% endif %}
 
 
+{% if machine.requires_in_person %}
+<p>An in-person induction is required for this machine.
+    {% if induction and not induction.has_expired() %}
+    <span class="badge-valid">valid</span>
+    {% elif induction %}
+    <span class="badge-invalid">expired</span>
+    {% else %}
+    <span class="badge-invalid">not completed</span>
+    {% endif %}
+</p>
+{% endif %}
+
+
 {% if machine.quizzes %}
 <p>The quizzes below are required to be able to use this machine.</p>
 {% endif %}
 
 {% for quiz in machine.quizzes %}
 <h3>{{ quiz.title }}</h3>
+<p>
+    {% if quiz in completed_quizes %}
+    <span class="badge-valid">valid</span>
+    {% elif quiz in expired_quizes %}
+    <span class="badge-invalid">expired</span>
+    {% else %}
+    <span class="badge-invalid">not completed</span>
+    {% endif %}
+</p>
 <p>{{ quiz.description }}</p>
 {% if quiz in completed_quizes %}
 <p><a href="{{ url_for('quiz.index', quiz_id=quiz.id, machine_id=machine.id) }}" class="button">Retake quiz</a></p>
+{% elif quiz in expired_quizes %}
+<p><a href="{{ url_for('quiz.index', quiz_id=quiz.id, machine_id=machine.id) }}" class="button">Completion expired. Take quiz</a></p>
 {% else %}
 <p><a href="{{ url_for('quiz.index', quiz_id=quiz.id, machine_id=machine.id) }}" class="button">Take quiz</a></p>
 {% endif %}

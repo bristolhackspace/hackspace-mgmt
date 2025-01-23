@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, g
 import logging
 
-from hackspace_mgmt.models import db, Machine, Induction, InductionState, LegacyMachineAuth, Member
+from hackspace_mgmt.models import db, Machine, Induction, LegacyMachineAuth, Member
 from hackspace_mgmt.general.helpers import login_required
 
 bp = Blueprint("induction", __name__)
@@ -23,6 +23,20 @@ def machine(machine_id):
 
     member: Member = g.member
 
-    completed_quizes = set(completion.quiz for completion in member.quiz_completions)
+    completed_quizes = set(completion.quiz for completion in member.quiz_completions if not completion.has_expired())
+    expired_quizes = set(completion.quiz for completion in member.quiz_completions if completion.has_expired())
 
-    return render_template("machine_induction.html", machine=machine, completed_quizes=completed_quizes, LegacyMachineAuth=LegacyMachineAuth)
+    induction = None
+    for member_induction in member.inductions:
+        if member_induction.machine == machine:
+            induction = member_induction
+            break
+
+    return render_template(
+        "machine_induction.html",
+        machine=machine,
+        completed_quizes=completed_quizes,
+        expired_quizes=expired_quizes,
+        induction=induction,
+        LegacyMachineAuth=LegacyMachineAuth
+    )
