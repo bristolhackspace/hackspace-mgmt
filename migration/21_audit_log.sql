@@ -15,3 +15,6 @@ CREATE TABLE public.audit_log
 );
 
 CREATE INDEX ON public.audit_log USING brin (logged_at);
+
+INSERT INTO public.audit_log(logged_at, category, event, member_id, data) SELECT completed_on, 'quiz', 'import', member_id, json_build_object('quiz_id', quiz_id) FROM public.quiz_completion
+ORDER BY id ASC;
