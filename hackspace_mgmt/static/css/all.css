@@ -309,14 +309,14 @@ input[readonly] {
     margin: 0.5rem; }
 
 .badge-valid {
-  border-radius: 0.1rem;
+  border-radius: 0.5rem;
   background-color: #4cb953;
-  padding: 0.2rem; }
+  padding: 0.5rem; }
 
   .badge-invalid {
-    border-radius: 0.1rem;
-    background-color: #b9514c;
-    padding: 0.2rem; }
+    border-radius: 0.5rem;
+    background-color: #ffa5a1;
+    padding: 0.5rem; }
 
     .login-options {
       display: grid;
