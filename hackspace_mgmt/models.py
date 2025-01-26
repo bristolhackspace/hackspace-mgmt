@@ -202,12 +202,8 @@ class Quiz(db.Model):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(String(), nullable=True)
     questions: Mapped[str] = mapped_column(String(), nullable=False)
-    machine_id: Mapped[Optional[int]] = mapped_column(ForeignKey("machine.id"))
     intro: Mapped[str] = mapped_column(String(), nullable=False, default="")
-    hidden: Mapped[bool] = mapped_column(nullable=False, default=False)
     valid_for_days: Mapped[int] = mapped_column(server_default="0")
-
-    machine: Mapped[Optional["Machine"]] = relationship()
 
     def __str__(self):
         return self.title

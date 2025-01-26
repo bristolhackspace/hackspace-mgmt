@@ -1,0 +1,3 @@
+ALTER TABLE IF EXISTS public.quiz DROP COLUMN IF EXISTS machine_id;
+
+ALTER TABLE IF EXISTS public.quiz DROP COLUMN IF EXISTS hidden;
