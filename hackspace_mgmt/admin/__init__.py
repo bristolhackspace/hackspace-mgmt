@@ -1,6 +1,6 @@
 from flask_admin import Admin
 
-from . import machine, induction, firmware_update, card, bulk_card, member, label, quiz
+from . import machine, induction, firmware_update, card, bulk_card, member, label, quiz, audit
 
 admin = Admin(None, 'Hackspace Management Admin', template_mode='bootstrap4', endpoint="admin", url="/admin")
 
@@ -12,3 +12,4 @@ bulk_card.create_views(admin)
 member.create_views(admin)
 label.create_views(admin)
 quiz.create_views(admin)
+audit.create_views(admin)

@@ -244,3 +244,5 @@ class AuditLog(db.Model):
     event: Mapped[str] = mapped_column(String(32))
     member_id: Mapped[int] = mapped_column(ForeignKey("member.id"))
     data: Mapped[Optional[JSON]] = mapped_column(type_=JSON)
+
+    member: Mapped["Member"] = relationship()
