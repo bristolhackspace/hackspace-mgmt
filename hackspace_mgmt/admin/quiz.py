@@ -14,6 +14,7 @@ class QuizView(ViewHelperJsMixin, ModelView):
 
 class QuizCompletionView(ViewHelperJsMixin, ModelView):
     column_list = ('member', 'quiz', 'completed_on')
+    column_searchable_list = ('member.display_name', 'quiz.title')
     can_create=False
     can_edit=False
 

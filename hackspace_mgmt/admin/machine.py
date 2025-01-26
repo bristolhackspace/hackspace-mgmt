@@ -6,7 +6,7 @@ from flask_admin.model.form import InlineFormAdmin
 
 class MachineView(ModelView):
     column_searchable_list = ['name']
-    column_list = ('name', 'controllers', 'hide_from_home', 'quizzes')
+    column_list = ('name', 'controllers', 'requires_in_person', 'valid_for_days', 'hide_from_home', 'quizzes')
     inline_models = (MachineController,)
     form_excluded_columns = ('inductions',)
     column_formatters = dict()
