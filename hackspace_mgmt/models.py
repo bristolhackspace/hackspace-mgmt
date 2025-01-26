@@ -179,7 +179,13 @@ class Induction(db.Model):
         valid_days = self.machine.induction_valid_for_days
         if valid_days <= 0:
             return False
-        return self.inducted_on < datetime.now(timezone.utc) + timedelta(days=valid_days)
+        return self.inducted_on + timedelta(days=valid_days) < datetime.now(timezone.utc)
+
+    def remaining_time(self):
+        valid_days = self.machine.induction_valid_for_days
+        if valid_days <= 0:
+            return None
+        return (self.inducted_on + timedelta(days=valid_days)) - datetime.now(timezone.utc)
 
 
 class Label(db.Model):
@@ -221,7 +227,13 @@ class QuizCompletion(db.Model):
         valid_days = self.quiz.valid_for_days
         if valid_days <= 0:
             return False
-        return self.completed_on < datetime.now(timezone.utc) + timedelta(days=valid_days)
+        return self.completed_on + timedelta(days=valid_days) < datetime.now(timezone.utc)
+
+    def remaining_time(self):
+        valid_days = self.quiz.valid_for_days
+        if valid_days <= 0:
+            return None
+        return (self.completed_on + timedelta(days=valid_days)) - datetime.now(timezone.utc)
 
 
 class MachineQuiz(db.Model):

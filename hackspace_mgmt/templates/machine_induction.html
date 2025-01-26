@@ -28,7 +28,12 @@
 {% if machine.requires_in_person %}
 <p>An in-person induction is required for this machine.
     {% if induction and not induction.has_expired() %}
+    {% set remaining = induction.remaining_time() %}
+    {% if not remaining is none %}
+    <span class="badge-valid">valid for {{ remaining.days }} days</span>
+    {% else %}
     <span class="badge-valid">valid</span>
+    {% endif %}
     {% elif induction %}
     <span class="badge-invalid">expired</span>
     {% else %}
@@ -46,7 +51,12 @@
 <h3>{{ quiz.title }}</h3>
 <p>
     {% if quiz in completed_quizes %}
+    {% set remaining = completed_quizes[quiz].remaining_time() %}
+    {% if not remaining is none %}
+    <span class="badge-valid">valid for {{ remaining.days }} days</span>
+    {% else %}
     <span class="badge-valid">valid</span>
+    {% endif %}
     {% elif quiz in expired_quizes %}
     <span class="badge-invalid">expired</span>
     {% else %}

@@ -23,7 +23,7 @@ def machine(machine_id):
 
     member: Member = g.member
 
-    completed_quizes = set(completion.quiz for completion in member.quiz_completions if not completion.has_expired())
+    completed_quizes = {completion.quiz:completion for completion in member.quiz_completions if not completion.has_expired()}
     expired_quizes = set(completion.quiz for completion in member.quiz_completions if completion.has_expired())
 
     induction = None
