@@ -85,6 +85,29 @@ def unlock(hostname):
 @bp.route('/<hostname>/lock')
 def lock(hostname):
     controller = controller_from_hostname(hostname)
+
+    card_serial = format_card_serial(request.args.get("card_id"))
+    card_subq = db.select(Card).where(Card.card_serial==card_serial).subquery()
+    member_query = db.select(Member).join(card_subq, Member.id==card_subq.c.member_id)
+    member = db.session.execute(member_query).scalar_one()
+
+    if member:
+        create_audit_log(
+            "access_control",
+            "lock",
+            data = {
+                "controller": {
+                    "id": controller.id,
+                    "hostname": controller.hostname
+                },
+                "machine": {
+                    "id": controller.machine.id,
+                    "name": controller.machine.name
+                },
+            },
+            member=member
+        )
+    
     current_app.logger.info(f"Lock button pressed on {controller.machine.name} ({hostname})")
     return {"unlocked": False}
 
@@ -218,19 +241,27 @@ def has_update(hostname):
         return {}
 
 
-@bp.route('/<hostname>/settings')
-def settings(hostname):
+@bp.route('/<hostname>/hello')
+def hello(hostname):
 
     controller = controller_from_hostname(hostname)
 
-    response = {}
+    create_audit_log(
+        "access_control",
+        "wakeup",
+        data = {
+            "controller": {
+                "id": controller.id,
+                "hostname": controller.hostname
+            },
+            "machine": {
+                "id": controller.machine.id,
+                "name": controller.machine.name
+            },
+        }
+    )
 
-    response["idle_timeout"] = controller.idle_timeout
-    response["idle_power_threshold"] = controller.idle_power_threshold
-
-    current_app.logger.debug(f"Settings response: {response}")
-
-    return response
+    return {}
 
 @bp.route('/firmware_update')
 def firmware_update():
