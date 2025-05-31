@@ -246,6 +246,11 @@ def hello(hostname):
 
     controller = controller_from_hostname(hostname)
 
+    response = {}
+
+    response["idle_timeout"] = controller.idle_timeout
+    response["idle_power_threshold"] = controller.idle_power_threshold
+
     create_audit_log(
         "access_control",
         "wakeup",
@@ -261,7 +266,7 @@ def hello(hostname):
         }
     )
 
-    return {}
+    return response
 
 @bp.route('/firmware_update')
 def firmware_update():
