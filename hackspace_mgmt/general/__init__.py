@@ -1,9 +1,14 @@
-from flask import Blueprint, flash, redirect, render_template, session, url_for, request, g
+from datetime import datetime, timezone, timedelta
+from flask import Blueprint, current_app, flash, redirect, render_template, session, url_for, request, g
 from flask_wtf import FlaskForm
+import jwt
 from markupsafe import Markup
+import requests
 from sqlalchemy.exc import NoResultFound
+import secrets
 from wtforms import fields, widgets
 from wtforms.validators import EqualTo, DataRequired
+import yarl
 
 import logging
 
@@ -51,6 +56,7 @@ def login():
             card = db.session.execute(card_select).scalar_one()
             if card.member is not None:
                 session["logged_in_member"] = card.member.id
+                session["sid"] = secrets.token_urlsafe()
             else:
                 flash("Card not yet registered to a member")
             return redirect(url_for("general.index"))
@@ -62,6 +68,31 @@ def login():
 
 @bp.route("/logout")
 def logout():
+    try:
+        storage_logout_url = current_app.config["STORAGE_APP_URL"] + "/backchannel-logout"
+        login_secret = current_app.config["STORAGE_LOGIN_SECRET"]
+
+        now = datetime.now(timezone.utc)
+        exp = now + timedelta(seconds=60)
+
+        logout_token = {
+            "sid": session["sid"],
+            "exp": int(exp.timestamp()),
+            "events": {
+                "http://schemas.openid.net/event/backchannel-logout": {}
+            }
+        }
+
+        logout_token = jwt.encode(logout_token, login_secret, algorithm="HS256")
+
+        payload = {
+            "logout_token": logout_token
+        }
+
+        req = requests.post(storage_logout_url, data=payload)
+    except Exception as ex:
+        logger.warning("Error sending logout request to storage", ex)
+
     session.clear()
     flash("Logged out successfully")
     return redirect(url_for("general.login"))
@@ -170,11 +201,37 @@ def enroll_personal():
         card.unverified_serial = None
         db.session.commit()
         session["logged_in_member"] = session["unverified_member_id"]
+        session["sid"] = secrets.token_urlsafe()
         flash("Card enrolled successfully")
         return redirect(url_for("general.index"))
 
     return render_template("enroll_personal.html", enroll_form=enroll_form)
 
+
+@bp.route("/storage-login")
+@login_required
+def storage_login():
+    login_secret = current_app.config["STORAGE_LOGIN_SECRET"]
+    name = g.member.display_name
+    sub = f"member_{g.member.id}"
+    email = g.member.email
+
+    now = datetime.now(timezone.utc)
+    exp = now + timedelta(seconds=60)
+
+    payload = {
+        "sub": sub,
+        "name": name,
+        "email": email,
+        "exp": int(exp.timestamp()),
+        "sid": session["sid"],
+        "nonce": secrets.token_urlsafe()
+    }
+
+    encoded = jwt.encode(payload, login_secret, algorithm="HS256")
+    redirect_url = yarl.URL(current_app.config["STORAGE_APP_URL"])
+    redirect_url = redirect_url.update_query(login_token=encoded)
+    return redirect(redirect_url)
 
 def init_app(app):
     app.register_blueprint(bp)

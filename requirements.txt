@@ -9,3 +9,4 @@ pyscss
 wtforms~=3.1
 flask-wtf
 PyYaml
+pyjwt
