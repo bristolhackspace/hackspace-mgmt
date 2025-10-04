@@ -17,6 +17,8 @@ bp = Blueprint("label", __name__)
 
 logger = logging.Logger(__name__)
 
+LATEST_SHORT_STAY = date(year=2025, month=10, day=3)
+
 @bp.route("/label")
 @login_required
 def index():
@@ -31,9 +33,12 @@ def create():
 
     if label_type == "short_stay":
         expiry = now + timedelta(days=30)
+        if expiry > LATEST_SHORT_STAY:
+            expiry = LATEST_SHORT_STAY
+        
         caption = "Short stay"
     elif label_type == "project_box":
-        expiry = now + timedelta(days=30*6)
+        expiry = now + timedelta(days=30*3)
         caption = "Project box"
     else:
         return {"error": "unknown label type"}, 400
